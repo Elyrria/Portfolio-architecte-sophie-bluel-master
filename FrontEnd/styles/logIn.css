@@ -9,6 +9,10 @@ header {
 	margin-bottom: 150px;
 }
 
+#bold-login{
+    font-weight: 700;
+}
+
 #logIn {
 	width: 50%;
 	margin: auto;
@@ -31,7 +35,7 @@ header {
 #password-lost {
 	display: block;
 	color: var(--main-color-text);
-	text-decoration: underline var(--second-color);
+	text-decoration: underline ;
 }
 
 @media screen and (max-width: 600px) {
