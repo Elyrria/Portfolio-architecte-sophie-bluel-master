@@ -60,48 +60,50 @@ divElement.classList.add('filters')
 // * Création du filtre Tous //
 const buttonFilter = document.createElement('button')
 buttonFilter.innerText = 'Tous'
-buttonFilter.id = 'filterTous'
+buttonFilter.name = 'Tous'
 divElement.appendChild(buttonFilter)
 
 //* Boucle qui permet d'ajouter autant de bouton filtre qu'il n'y a de catégorie dans le tableau category //
 for (let i = 0; i < category.length; i++) {
 	const buttonFilter = document.createElement('button')
-	buttonFilter.innerText = category[i].name
+	//.replace permet de modifier Hotel par Hôtel
+	buttonFilter.innerText = category[i].name.replace(/Ho/g, 'Hô')
 	//.replace permet de rechercher une string entre les deux slashs et le g exécute la recherche le deuxième argument remplace la string si trouvée //
-	buttonFilter.id = `filter${category[i].name.replace(/ /g, '').replace(/&r/g, 'EtR')}`
+	buttonFilter.name = `${category[i].name.replace(/ /g, '').replace(/&r/g, 'EtR')}`
 	// Ajout du bouton[i] dans la divElement //
 	divElement.appendChild(buttonFilter)
-	//! Il faudra modifier la base de donnée catégorie pour changer le nom de la catégorie "hotel & restaurants" par "Hôtel & restaurant"
+	//! Il faudrait modifier la base de donnée catégorie pour changer le nom de la catégorie "hotel & restaurants" par "Hôtel & restaurant"
 }
 // Ajout de la divElement qui contient tous les filtre avant l'enfant .gallery //
 document.querySelector('.gallery').before(divElement)
 
 //* ÉCOUTE DES ÉVENEMENTS AU CLIC DES BOUTONS FILTRES //
-// Filtre Tous
-const filterTous = document.getElementById('filterTous')
-filterTous.addEventListener('click', () => {
-	document.querySelector('.gallery').innerHTML = ''
-	galleryGeneration(works)
-})
 
+//* Récupération des noms de chaque catégories et stockage dans la const categoryName
+const categoryName = category.map((name) => name.name)
+//Ajout au tableau la string Tous
+categoryName.push('Tous')
+const btnsFilters = document.querySelectorAll('.filters button')
+// Écoute de l'ensemble des boutons filtre
+btnsFilters.forEach((button) => {
+	button.addEventListener('click', (event) => {
+		// récupération de l'évenement dans la variable filterName
+		let filterName = event.target.name
+		// Remplacement si évenement de la string "Hôtel & restaurant" par la même string contenu dans le tableau
+		filterName = filterName.replace(/HotelsEtRestaurants/g, 'Hotels & restaurants')
+		// Vérification que la string de l'évenement est bien présente dans le tableau categoryName et applique la fonction filterDeletAndDisplay
+		categoryName.includes(filterName) ? filterDeletAndDisplay(filterName) : console.log('erreur')
+	})
+})
+//* FOnction qui permet de supprimer la gallery du DOM et de l'afficher de nouveau avec la liste filtrée
 function filterDeletAndDisplay(category) {
-	const filteredWorks = works.filter((work) => work.category.name === category)
-	document.querySelector('.gallery').innerHTML = ''
-	galleryGeneration(filteredWorks)
+	if (category === 'Tous') {
+		document.querySelector('.gallery').innerHTML = ''
+		galleryGeneration(works)
+	} else {
+		const filteredWorks = works.filter((work) => work.category.name === category)
+		document.querySelector('.gallery').innerHTML = ''
+		galleryGeneration(filteredWorks)
+	}
 }
 
-// Filtre Objets
-const filterObjets = document.getElementById('filterObjets')
-filterObjets.addEventListener('click', () => {
-	filterDeletAndDisplay('Objets')
-})
-//Filtre Appartements
-const filterAppartements = document.getElementById('filterAppartements')
-filterAppartements.addEventListener('click', () => {
-	filterDeletAndDisplay('Appartements')
-})
-//Filtre Hotels & restaurants
-const filterHotelsEtRestaurants = document.getElementById('filterHotelsEtRestaurants')
-filterHotelsEtRestaurants.addEventListener('click', () => {
-	filterDeletAndDisplay('Hotels & restaurants')
-})
