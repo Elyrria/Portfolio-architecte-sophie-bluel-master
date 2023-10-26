@@ -11,33 +11,45 @@
     <link rel="stylesheet" href="../styles/logIn.css">
     <!--* type="module" permet de récupérer des méthodes ou autres informations dans d'autre fichier script.js -->
     <!--* Il n'est pas forcement nécessaire lier tous les fichers logIn.js -->
-    <script type="module" src="scripts/logIn.js" defer></script>
+    <script type="module" src="../scripts/logIn.js" defer></script>
 </head>
 
 <body>
     <header>
-        <a href="../index.html"><h1>Sophie Bluel <span>Architecte d'inteérieur</span></h1></a>
+        <a href="../index.html">
+            <h1>Sophie Bluel <span>Architecte d'inteérieur</span></h1>
+        </a>
         <nav>
             <ul>
-                <li>projets</li>
-                <li>contact</li>
-				<a href="../pages/logIn.html"><li>login</li></a>
-                <li><img src="../assets/icons/instagram.png" alt="Instagram"></li>
+                <a href="../index.html#portfolio">
+					<li>projets</li>
+				</a>
+				<a href="../index.html#contact">
+					<li>contact</li>
+				</a>
+                <a href="../pages/logIn.html">
+                    <li>login</li>
+                </a>
+                <a href="https://www.instagram.com/">
+                    <li><img src="../assets/icons/instagram.png" alt="Instagram"></li>
+                </a>
             </ul>
         </nav>
     </header>
     <main>
-        <h1>Log in</h1>
-        <form action="">
-            <label for="email">E-mail</label><br>
-            <input type="email" name="email"><br>
-            <label for="password">Mot de passe</label><br>
-            <input type="password" name="password"><br>
-            <button>Se connecter</button>
-        </form>
-        <a href="#">Mot de passe oublié</a>
+        <section id="logIn">
+            <h2>Log in</h2>
+            <form class="form-style" action="#" method="post">
+                <label class="label-style" for="email">E-mail</label>
+                <input class="input-style" type="email" name="email" id="email">
+                <label class="label-style" for="password">Mot de passe</label>
+                <input class="input-style" type="password" name="password" id="password">
+                <input type="submit" value="Se connecter">
+            </form>
+            <a href="#" id="password-lost">Mot de passe oublié</a>
+        </section>
     </main>
-    <footer>
+    <footer id="footer-logIn">
         <nav>
             <ul>
                 <li>Mentions Légales</li>

@@ -1,0 +1,46 @@
+:root {
+	--main-color: #b1663c;
+	--main-color-text: #3d3d3d;
+	--second-color: #1d6154;
+	--background-color: #fffef8;
+}
+
+header {
+	margin-bottom: 150px;
+}
+
+#logIn {
+	width: 50%;
+	margin: auto;
+}
+
+#logIn h2, #password-lost {
+	text-align: center;
+}
+
+#logIn input[type='submit'] {
+	margin: 2em auto;
+}
+
+#footer-logIn {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+#password-lost {
+	display: block;
+	color: var(--main-color-text);
+	text-decoration: underline var(--second-color);
+}
+
+@media screen and (max-width: 600px) {
+	#logIn {
+		width: 75%;
+	}
+}
+@media screen and (max-width: 320px) {
+	#logIn {
+		width: 100%;
+	}
+}

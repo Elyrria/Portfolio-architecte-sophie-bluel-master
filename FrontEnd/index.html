@@ -18,13 +18,23 @@
 
 <body>
 	<header>
-		<a href="index.html"><h1>Sophie Bluel <span>Architecte d'inteérieur</span></h1></a>
+		<a href="index.html">
+			<h1>Sophie Bluel <span>Architecte d'inteérieur</span></h1>
+		</a>
 		<nav>
 			<ul>
-				<li>projets</li>
-				<li>contact</li>
-				<a href="pages/logIn.html"><li>login</li></a>
-				<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
+				<a href="#portfolio">
+					<li>projets</li>
+				</a>
+				<a href="#contact">
+					<li>contact</li>
+				</a>
+				<a href="pages/logIn.html">
+					<li>login</li>
+				</a>
+				<a href="https://www.instagram.com/">
+					<li><img src="./assets/icons/instagram.png" alt="Instagram"></li>
+				</a>
 			</ul>
 		</nav>
 	</header>
@@ -52,13 +62,13 @@
 		<section id="contact">
 			<h2>Contact</h2>
 			<p>Vous avez un projet ? Discutons-en !</p>
-			<form action="#" method="post">
-				<label for="name">Nom</label>
-				<input type="text" name="name" id="name">
-				<label for="email">Email</label>
-				<input type="email" name="email" id="email">
-				<label for="message">Message</label>
-				<textarea name="message" id="message" cols="30" rows="10"></textarea>
+			<form class="form-style" action="#" method="post">
+				<label class="label-style" for="name">Nom</label>
+				<input class="input-style" type="text" name="name" id="name">
+				<label class="label-style" for="email">Email</label>
+				<input class="input-style" type="email" name="email" id="email">
+				<label class="label-style" for="message">Message</label>
+				<textarea class="input-style" name="message" id="message" cols="30" rows="10"></textarea>
 				<input type="submit" value="Envoyer">
 			</form>
 		</section>
