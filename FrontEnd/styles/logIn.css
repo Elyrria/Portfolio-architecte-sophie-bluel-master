@@ -9,8 +9,8 @@ header {
 	margin-bottom: 150px;
 }
 
-#bold-login{
-    font-weight: 700;
+#bold-login {
+	font-weight: 700;
 }
 
 #logIn {
@@ -18,7 +18,8 @@ header {
 	margin: auto;
 }
 
-#logIn h2, #password-lost {
+#logIn h2,
+#password-lost {
 	text-align: center;
 }
 
@@ -27,15 +28,47 @@ header {
 }
 
 #footer-logIn {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
+	position: fixed;
+	bottom: 0;
+	width: 100%;
+	max-width: 1140px;
 }
 
 #password-lost {
 	display: block;
 	color: var(--main-color-text);
-	text-decoration: underline ;
+	text-decoration: underline;
+}
+
+/*!  SI UTILISATEUR CONNECTÉ !  */
+
+.edit-mode {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 45px;
+	gap: 7px;
+	color: white;
+	background-color: black;
+}
+
+#portfolio h2 {
+	margin-bottom: 0;
+}
+
+#user-modifications {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 30px;
+	margin-bottom: 2.5em;
+}
+
+#sub-user-modifications{
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	color: black;
 }
 
 @media screen and (max-width: 600px) {
@@ -47,4 +80,6 @@ header {
 	#logIn {
 		width: 100%;
 	}
+
+
 }

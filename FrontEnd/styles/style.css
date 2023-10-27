@@ -211,7 +211,7 @@ li:hover {
 	color: var(--main-color);
 }
 
-nav .fa-brands{
+nav .fa-brands {
 	font-size: 1.5em;
 }
 
@@ -313,7 +313,8 @@ button[name='HotelsEtRestaurants'] {
 	margin: auto;
 }
 
-#contact h2, #contact p   {
+#contact h2,
+#contact p {
 	text-align: center;
 }
 
@@ -360,7 +361,7 @@ input[type='submit'] {
 
 input[type='submit']:hover {
 	cursor: pointer;
-	background-color: #0E2F28;
+	background-color: #0e2f28;
 	box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
 }
 input[type='submit']:active {

@@ -1,5 +1,7 @@
-//* RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES TRAVAUX //
+//? Import des fonction nécessaire pour modifier la page d'accueil lors de la connexion de l'utilisateur //
+import { modficationHomePageUserLogIn } from './logIn.js'
 
+//* RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES TRAVAUX //
 ////* Récupération des travaux sur le localStorage ////
 let works = window.localStorage.getItem('works')
 //* Si pas présent récupération via l'API et stockage dans le localStorage //
@@ -95,15 +97,16 @@ btnsFilters.forEach((button) => {
 		categoryName.includes(filterName) ? filterDeletAndDisplay(filterName) : console.log('erreur')
 	})
 })
-//* FOnction qui permet de supprimer la gallery du DOM et de l'afficher de nouveau avec la liste filtrée
-function filterDeletAndDisplay(category) {
-	if (category === 'Tous') {
+//* Fonction qui permet de supprimer la gallery du DOM et de l'afficher de nouveau avec la liste filtrée
+function filterDeletAndDisplay(filterName) {
+	if (filterName === 'Tous') {
 		document.querySelector('.gallery').innerHTML = ''
 		galleryGeneration(works)
 	} else {
-		const filteredWorks = works.filter((work) => work.category.name === category)
+		const filteredWorks = works.filter((work) => work.category.name === filterName)
 		document.querySelector('.gallery').innerHTML = ''
 		galleryGeneration(filteredWorks)
 	}
 }
 
+modficationHomePageUserLogIn()
