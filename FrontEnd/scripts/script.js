@@ -109,4 +109,4 @@ function filterDeletAndDisplay(filterName) {
 	}
 }
 
-modficationHomePageUserLogIn()
+// modficationHomePageUserLogIn()

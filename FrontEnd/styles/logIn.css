@@ -52,8 +52,8 @@ header {
 	background-color: black;
 }
 
-#portfolio h2 {
-	margin-bottom: 0;
+#portfolio .user-connected-h2 {
+	margin: 0;
 }
 
 #user-modifications {
@@ -64,10 +64,18 @@ header {
 	margin-bottom: 2.5em;
 }
 
-#sub-user-modifications{
+#sub-user-modifications {
 	display: flex;
 	align-items: center;
 	gap: 7px;
+	color: black;
+}
+
+#error-message-mail,
+#error-message-password {
+	text-align: center;
+	font-weight: bold;
+	margin-top: 8px;
 	color: black;
 }
 
@@ -80,6 +88,4 @@ header {
 	#logIn {
 		width: 100%;
 	}
-
-
 }
