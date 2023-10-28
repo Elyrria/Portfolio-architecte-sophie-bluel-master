@@ -40,7 +40,7 @@ header {
 	text-decoration: underline;
 }
 
-/*!  SI UTILISATEUR CONNECTÉ !  */
+/*!  SI UTILISATEUR CONNECTÉ !*/
 
 .edit-mode {
 	display: flex;
@@ -73,6 +73,8 @@ header {
 
 #error-message-mail,
 #error-message-password {
+	display: block;
+	height: 14px;
 	text-align: center;
 	font-weight: bold;
 	margin-top: 8px;

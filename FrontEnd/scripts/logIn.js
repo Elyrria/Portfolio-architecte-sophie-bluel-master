@@ -41,10 +41,10 @@ function emailValidity(logInEmail) {
 	}
 }
 
-/** 
-//* Fonction qui permet de vérifier que le mot de passe n'est pas vide 
-@param {String} logInPassword
-*/
+/**
+ **Fonction qui permet de vérifier que le mot de passe n'est pas vide
+ * @param {String} logInPassword
+ */
 
 function passwordValidty(logInPassword) {
 	// Si logInPassword renvoi false alors création l'erreur suivante
@@ -52,42 +52,35 @@ function passwordValidty(logInPassword) {
 		throw new Error("Le mot de passe n'est pas valide")
 	}
 }
-//?? Fonction à améliorer car trop de if/else ??//
-//  @param {String} erroMessage
+/**
+ *  @param {String} erroMessage
+ */
 function showErrorMessage(errorMessage) {
-	if (errorMessage === "L'Email ne respecte pas les critères pour être valide") {
-		generationMailErrorMessage(errorMessage)
-	} else {
-		generationMailErrorMessage('')
-		if (errorMessage === "Le mot de passe n'est pas valide") {
-			generationPasswordErrorMessage(errorMessage)
-		} else {
-			generationPasswordErrorMessage('')
-		}
-	}
-}
+	errorMessage === "L'Email ne respecte pas les critères pour être valide"
+		? generationMailErrorMessage(errorMessage)
+		: generationMailErrorMessage('')
 
-/** 
-//* Fonction qui permet d'afficher ou supprimer le message d'erreur dans le DOM si le champ email n'est pas correctement rempli 
-*@param {String} erroMessage
-*/
-function generationMailErrorMessage(errorMessage) {
-	//Création d'une constant qui contiendra l'élement du DOM avec un id error-message
-	let paraErrorMessage = document.getElementById('error-message-mail')
-	//Si l'élement avec l'id error-message n'existe pas alors exécute ce qui suit
-	if (!paraErrorMessage) {
-		const labelPassword = document.querySelector('label[for="logInPassword"]')
-		paraErrorMessage = document.createElement('p')
-		paraErrorMessage.id = 'error-message-mail'
-		labelPassword.before(paraErrorMessage)
-	}
-	paraErrorMessage.innerText = errorMessage
-	console.log(errorMessage)
+	errorMessage === "Le mot de passe n'est pas valide"
+		? generationPasswordErrorMessage(errorMessage)
+		: generationPasswordErrorMessage('')
 }
 
 /**
- // * Fonction qui permet d'afficher ou supprimer le message d'erreur dans le DOM si le champ mot de passe n'est pas correctement rempli 
-//  @param {String} erroMessage
+ **Fonction qui permet d'afficher ou supprimer le message d'erreur dans le DOM si le champ email n'est pas correctement rempli
+ * @param {String} erroMessage
+ */
+function generationMailErrorMessage(errorMessage) {
+	// let inputEmail = document.getElementById('logInEmail')
+	// console.log(inputEmail)
+	// inputEmail.setCustomValidity(errorMessage)
+	//Création d'une constant qui contiendra l'élement du DOM avec un id error-message
+	let spanErrorMessage = document.getElementById('error-message-mail')
+	spanErrorMessage.innerText = errorMessage
+}
+
+/**
+ **Fonction qui permet d'afficher ou supprimer le message d'erreur dans le DOM si le champ mot de passe n'est pas correctement rempli
+ *  @param {String} erroMessage
  */
 function generationPasswordErrorMessage(errorMessage) {
 	//Création d'une constant qui contiendra l'élement du DOM avec un id error-message
