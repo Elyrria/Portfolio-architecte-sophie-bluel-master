@@ -1,8 +1,9 @@
 //? Import des fonction nécessaire pour modifier la page d'accueil lors de la connexion de l'utilisateur //
-import { modficationHomePageUserLogIn } from './logIn.js'
+// import { modficationHomePageUserLogIn } from './logIn.js'
 
-//* RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES TRAVAUX //
-////* Récupération des travaux sur le localStorage ////
+//? RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES TRAVAUX //
+
+//* Récupération des travaux sur le localStorage //
 let works = window.localStorage.getItem('works')
 //* Si pas présent récupération via l'API et stockage dans le localStorage //
 if (works === null) {
@@ -14,7 +15,7 @@ if (works === null) {
 	// Sinon parse.works
 } else {
 	works = JSON.parse(works)
-	// ! PENSER À RÉACTUALISER LE LOCALSTORAGE SI RAJOUT D'UN WORK ! //
+	// ! PENSER À RÉACTUALISER LE LOCALSTORAGE SI RAJOUT D'UN WORK ET QUAND L'UTILISATEUR CLIC SUR LE FILTRE TOUS ! //
 }
 
 //* GÉNÉRATION DES TRAVAUX SUR LA PAGE D'ACCUEIL //
@@ -39,7 +40,7 @@ galleryGeneration(works)
 
 //* RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES CATÉGORIE //
 
-////* Récupération des catégories sur le localStorage ////
+//* Récupération des catégories sur le localStorage //
 let category = window.localStorage.getItem('category')
 //* Si pas présent récupération via l'API et stockage dans le localStorage //
 if (category === null) {
@@ -51,10 +52,10 @@ if (category === null) {
 	// Sinon parse.works
 } else {
 	category = JSON.parse(category)
-	// ! PENSER À RÉACTUALISER LE LOCALSTORAGE SI RAJOUT D'UN WORK ! //
+	// ! PENSER À RÉACTUALISER LE LOCALSTORAGE SI RAJOUT D'UN WORK ET QUAND L'UTILISATEUR CLIC SUR LE FILTRE TOUS ! //
 }
 
-//* CRÉATION DES FILTRES //
+//? CRÉATION DES FILTRES //
 // Création de la div et ajout de la class filters //
 const divElement = document.createElement('div')
 divElement.classList.add('filters')
@@ -65,7 +66,7 @@ buttonFilter.innerText = 'Tous'
 buttonFilter.name = 'Tous'
 divElement.appendChild(buttonFilter)
 
-//* Boucle qui permet d'ajouter autant de bouton filtre qu'il n'y a de catégorie dans le tableau category //
+//* Boucle qui permet d'ajouter autant de bouton filtre qu'il a de catégorie dans le tableau category //
 for (let i = 0; i < category.length; i++) {
 	const buttonFilter = document.createElement('button')
 	//.replace permet de modifier Hotel par Hôtel
@@ -79,12 +80,11 @@ for (let i = 0; i < category.length; i++) {
 // Ajout de la divElement qui contient tous les filtre avant l'enfant .gallery //
 document.querySelector('.gallery').before(divElement)
 
-//* ÉCOUTE DES ÉVENEMENTS AU CLIC DES BOUTONS FILTRES //
-
 //* Récupération des noms de chaque catégories et stockage dans la const categoryName
 const categoryName = category.map((name) => name.name)
 //Ajout au tableau la string Tous
 categoryName.push('Tous')
+//* Écoute de chaque button filters //
 const btnsFilters = document.querySelectorAll('.filters button')
 // Écoute de l'ensemble des boutons filtre
 btnsFilters.forEach((button) => {
@@ -97,6 +97,8 @@ btnsFilters.forEach((button) => {
 		categoryName.includes(filterName) ? filterDeletAndDisplay(filterName) : console.log('erreur')
 	})
 })
+
+//? MODIFICATION DE LA PAGE SI L'UTILISATEUR CONNECTÉ //
 //* Fonction qui permet de supprimer la gallery du DOM et de l'afficher de nouveau avec la liste filtrée
 function filterDeletAndDisplay(filterName) {
 	if (filterName === 'Tous') {
@@ -109,4 +111,78 @@ function filterDeletAndDisplay(filterName) {
 	}
 }
 
-// modficationHomePageUserLogIn()
+//* Fonction qui permet de créer la div au dessus du header si utilisateur connecté //
+function newDivLogIn() {
+	const newDiv = document.createElement('div')
+	const newIcon = document.createElement('i')
+	const newPara = document.createElement('p')
+	newDiv.classList.add('edit-mode')
+	newIcon.classList.add('fa-regular', 'fa-pen-to-square')
+	newPara.innerText = 'Mode édition'
+	newDiv.appendChild(newIcon)
+	newDiv.appendChild(newPara)
+	
+	document.querySelector('header').before(newDiv)
+}
+
+//* Remplacement du bouton logIn par logOut //
+function replaceLogInLogOut() {
+	// Suppression du bouton logIn
+	document.getElementById('loginDisabel').remove()
+	// Création du bouton logOut
+	const newLi = document.createElement('li')
+	const logOut = document.createElement('a')
+	logOut.innerText = 'logout'
+	logOut.id = 'logOut'
+	logOut.href = '#'
+	newLi.appendChild(logOut)
+	document.getElementById('logo-instagram').before(newLi)
+}
+
+//* Fonction qui permet d'ajouter le btn modifier à coté du titre Mes Projet //
+function addButtonModify() {
+	const newDiv = document.createElement('div')
+	const h2 = document.querySelector('#portfolio h2')
+	const subNewDiv = document.createElement('div')
+	const newIcon = document.createElement('i')
+	const newPara = document.createElement('p')
+	newDiv.id = 'user-modifications'
+	h2.classList.add('user-connected-h2')
+	subNewDiv.id = 'sub-user-modifications'
+	newIcon.classList.add('fa-regular', 'fa-pen-to-square')
+	newPara.innerText = 'modifier'
+	
+	subNewDiv.appendChild(newIcon)
+	subNewDiv.appendChild(newPara)
+	// Ajout du h2 Mes Projets dans la newDiv
+	newDiv.appendChild(h2)
+	// Ajout de la subNewDiv dans la newDiv
+	newDiv.appendChild(subNewDiv)
+	// Ajout de la newDiv dans le DOM
+	document.querySelector('.gallery').before(newDiv)
+}
+
+//* Fonction qui permet de supprimer les filtres si l'utilisateur est connecté //
+function disableFilters() {
+	document.querySelector('main #portfolio .filters').remove()
+}
+
+//* Fonction qui permet d'appeler toutes les fonctions qui modifireont la page si l'utilisteur est connecté //
+function modficationHomePageUserLogIn() {
+	
+	let tokenTest = 'dnsofv'
+	if (!tokenTest === 'dnsofv') {
+			console.log(tokenTest)
+		modficationHomePageUserLogIn()
+	}
+
+	newDivLogIn()
+	replaceLogInLogOut()
+	addButtonModify()
+	disableFilters()
+}
+
+
+// * Supprime le token du sessionStorage
+// document.getElementById('logOut').addEventListener('click', ()=>{
+// })
