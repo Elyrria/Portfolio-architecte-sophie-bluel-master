@@ -3,32 +3,31 @@ async function btnLogIn() {
 	document.querySelector('#logIn form').addEventListener('submit', (event) => {
 		event.preventDefault()
 		manageForm()
+		redirectionHomePage()
 	})
 }
 
 btnLogIn()
-
-//!!!!!!! Normalement cette phrase doit être affichée “Erreur dans l’identifiant ou le mot de passe” !!!!!! \\\\\\
 //* Fonction qui permet de gérer le formulaire en demandant la vérification de l'ensemble des champs
 function manageForm() {
 	try {
 		// Récupération de l'email //
 		let logInEmail = document.getElementById('logInEmail').value
 		emailValidity(logInEmail)
-		console.log(logInEmail)
 		// Récupération du mot de passe //
 		let logInPassword = document.getElementById('logInPassword').value
 		passwordValidty(logInPassword)
-		console.log(logInPassword)
 		showErrorMessage('')
-		//! Majuscule ? ! //
+		validationAcces(logInEmail, logInPassword)
+
 		// Gestion des erreurs //
-	} catch (Error) {
+	} catch (error) {
 		//Récupération de l'erreur est stockage dans la variable errorMessage
-		let errorMessage = Error.message
+		let errorMessage = error.message
 		showErrorMessage(errorMessage)
 	}
 }
+
 /**
  ** Fonction qui permet de vérifier que l'email est bien rempli et valide selon le regExp
  *  @param {String} logInEmail
@@ -37,6 +36,7 @@ function emailValidity(logInEmail) {
 	const regex = new RegExp('^[a-z0-9._-]+@[a-z0-9._-]+\\.[a-z]+$')
 	// Si logEmail est faux alors création l'erreur suivante
 	if (!regex.test(logInEmail)) {
+		console.error("L'Email ne respecte pas les critères pour être valide")
 		throw new Error("L'Email ne respecte pas les critères pour être valide")
 	}
 }
@@ -49,110 +49,105 @@ function emailValidity(logInEmail) {
 function passwordValidty(logInPassword) {
 	// Si logInPassword renvoi false alors création l'erreur suivante
 	if (logInPassword.trim() === '') {
-		throw new Error("Le mot de passe n'est pas valide")
+		console.error('Le mot de passe ne peut pas être vide')
+		throw new Error('Le mot de passe ne peut pas être vide')
 	}
 }
 /**
  *  @param {String} erroMessage
  */
 function showErrorMessage(errorMessage) {
-	errorMessage === "L'Email ne respecte pas les critères pour être valide"
-		? generationMailErrorMessage(errorMessage)
-		: generationMailErrorMessage('')
-
-	errorMessage === "Le mot de passe n'est pas valide"
-		? generationPasswordErrorMessage(errorMessage)
-		: generationPasswordErrorMessage('')
-}
-
-/**
- **Fonction qui permet d'afficher ou supprimer le message d'erreur dans le DOM si le champ email n'est pas correctement rempli
- * @param {String} erroMessage
- */
-function generationMailErrorMessage(errorMessage) {
-	// let inputEmail = document.getElementById('logInEmail')
-	// console.log(inputEmail)
-	// inputEmail.setCustomValidity(errorMessage)
-	//Création d'une constant qui contiendra l'élement du DOM avec un id error-message
-	let spanErrorMessage = document.getElementById('error-message-mail')
-	spanErrorMessage.innerText = errorMessage
-}
-
-/**
- **Fonction qui permet d'afficher ou supprimer le message d'erreur dans le DOM si le champ mot de passe n'est pas correctement rempli
- *  @param {String} erroMessage
- */
-function generationPasswordErrorMessage(errorMessage) {
-	//Création d'une constant qui contiendra l'élement du DOM avec un id error-message
-	let paraErrorMessage = document.getElementById('error-message-password')
-	//Si l'élement avec l'id error-message n'existe pas alors exécute ce qui suit
-	if (!paraErrorMessage) {
-		const labelPassword = document.querySelector('#logIn input[type="submit"]')
-		console.log(labelPassword)
-		paraErrorMessage = document.createElement('p')
-		paraErrorMessage.id = 'error-message-password'
-		labelPassword.before(paraErrorMessage)
+	// La saisie du mail n'est pas valide
+	if (errorMessage === "L'Email ne respecte pas les critères pour être valide") {
+		let spanErrorMessage = document.getElementById('error-message-mail')
+		spanErrorMessage.innerText = errorMessage
+	} else {
+		let spanErrorMessage = document.getElementById('error-message-mail')
+		spanErrorMessage.innerText = ''
 	}
-	paraErrorMessage.innerText = errorMessage
-	console.log(errorMessage)
+	// La saisie du mot de passe n'est pas valide
+	if (errorMessage === 'Le mot de passe ne peut pas être vide') {
+		//Création d'une constant qui contiendra l'élement du DOM avec un id error-message
+		let paraErrorMessage = document.getElementById('error-message-password')
+		paraErrorMessage.innerText = errorMessage
+	} else {
+		//Création d'une constant qui contiendra l'élement du DOM avec un id error-message
+		let paraErrorMessage = document.getElementById('error-message-password')
+		paraErrorMessage.innerText = ''
+	}
+	//Erreur d'identification
+	if (errorMessage === 'Erreur dans l’identifiant ou le mot de passe') {
+		let paraErrorMessage = document.getElementById('error-message-password')
+		paraErrorMessage.innerText = errorMessage
+	} else {
+		let paraErrorMessage = document.getElementById('error-message-password')
+		paraErrorMessage.innerText = ''
+	}
 }
 
-//* Fonction qui permet d'appeler toutes les fonctions qui modifireont la page si l'utilisteur est connecté //
-export function modficationHomePageUserLogIn() {
-	newDivLogIn()
-	replaceLogInLogOut()
-	addButtonModify()
-	disableFilters()
+//Fonction qui permet d'afficher ou supprimer le message d'erreur dans le DOM si le champ email n'est pas correctement rempli
+// function generationMailErrorMessage(errorMessage) {
+// 	// let inputEmail = document.getElementById('logInEmail')
+// 	// console.log(inputEmail)
+// 	// inputEmail.setCustomValidity(errorMessage)
+// 	//Création d'une constant qui contiendra l'élement du DOM avec un id error-message
+// 	let spanErrorMessage = document.getElementById('error-message-mail')
+// 	spanErrorMessage.innerText = errorMessage
+// }
+
+//Fonction qui permet d'afficher ou supprimer le message d'erreur dans le DOM si le champ mot de passe n'est pas correctement rempli
+// function generationPasswordErrorMessage(errorMessage) {
+// 	//Création d'une constant qui contiendra l'élement du DOM avec un id error-message
+// 	let paraErrorMessage = document.getElementById('error-message-password')
+// 	paraErrorMessage.innerText = errorMessage
+// }
+
+async function validationAcces(logInEmail, logInPassword) {
+	try {
+		//* Construction de l'objet bodyFetch qui reprend les callbacks logEmail et LogInPassword
+		const bodyFetch = {
+			email: logInEmail,
+			password: logInPassword,
+		}
+		console.log(JSON.stringify(bodyFetch))
+		//* Fetch pour récupération de l'id et token avec le verbe POST + headers et body
+		const reponse = await fetch('http://localhost:5678/api/users/login', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				accept: 'application/json',
+			},
+			body: JSON.stringify(bodyFetch),
+		})
+
+		// Si la réponse de l'API est strictement égale à 401 alors affiche le message d'erreur suivant :
+		if (reponse.status === 401) {
+			let erroMessage = 'Erreur dans l’identifiant ou le mot de passe'
+			showErrorMessage(erroMessage)
+			console.error('Erreur dans l’identifiant ou le mot de passe')
+			// Sinon si la réponse n'est pas ok, attrape l'erreur
+		} else if (!reponse.ok) {
+			throw new Error(`HTTP ${reponse.status}`)
+		}
+		// Création de la constant qui accueillera la réponse au format JavaScript
+		const accesValidation = await reponse.json()
+		console.log(accesValidation)
+		// Si le token est bien présent alors stock le dans le sessionStorage
+		if (accesValidation.token) {
+			let tokenLogIn = JSON.stringify(accesValidation)
+			window.sessionStorage.setItem('token', tokenLogIn)
+			// Sinon affiche le message d'erreur suivant :
+		} else {
+			console.error("Le serveur n'a pas renvoyé de token d'authification")
+		}
+	} catch (error) {
+		console.error("Une erreur s'est produite", error)
+	}
+
+	// redirectionHomePage()
 }
 
-//* Fonction qui permet de créer la div au dessus du header si utilisateur connecté //
-function newDivLogIn() {
-	const newDiv = document.createElement('div')
-	const newIcon = document.createElement('i')
-	const newPara = document.createElement('p')
-	newDiv.classList.add('edit-mode')
-	newIcon.classList.add('fa-regular', 'fa-pen-to-square')
-	newPara.innerText = 'Mode édition'
-	newDiv.appendChild(newIcon)
-	newDiv.appendChild(newPara)
-
-	document.querySelector('header').before(newDiv)
-}
-
-//* Remplacement du bouton logIn par logOut //
-function replaceLogInLogOut() {
-	// Suppression du bouton logIn
-	document.querySelector('a[href="pages/logIn.html"]').remove()
-	// Création du bouton logOut
-	const logOut = document.createElement('li')
-	logOut.innerText = 'logout'
-	document.querySelector('header nav ul a[href="https://www.instagram.com/"]').before(logOut)
-}
-
-//* Fonction qui permet d'ajouter le btn modifier à coté du titre Mes Projet //
-function addButtonModify() {
-	const newDiv = document.createElement('div')
-	const h2 = document.querySelector('#portfolio h2')
-	const subNewDiv = document.createElement('div')
-	const newIcon = document.createElement('i')
-	const newPara = document.createElement('p')
-	newDiv.id = 'user-modifications'
-	h2.classList.add('user-connected-h2')
-	subNewDiv.id = 'sub-user-modifications'
-	newIcon.classList.add('fa-regular', 'fa-pen-to-square')
-	newPara.innerText = 'modifier'
-
-	subNewDiv.appendChild(newIcon)
-	subNewDiv.appendChild(newPara)
-	// Ajout du h2 Mes Projets dans la newDiv
-	newDiv.appendChild(h2)
-	// Ajout de la subNewDiv dans la newDiv
-	newDiv.appendChild(subNewDiv)
-	// Ajout de la newDiv dans le DOM
-	document.querySelector('.gallery').before(newDiv)
-}
-
-//* Fonction qui permet de supprimer les filtres si l'utilisateur est connecté //
-function disableFilters() {
-	document.querySelector('main #portfolio .filters').remove()
+//* Function qui redirige vers la page d'accueil
+async function redirectionHomePage() {
+	document.location.href = 'http://127.0.0.1:5500/FrontEnd/index.html'
 }
