@@ -5,10 +5,6 @@
 	--background-color: #fffef8;
 }
 
-header {
-	margin-bottom: 150px;
-}
-
 #bold-login {
 	font-weight: 700;
 }
@@ -40,7 +36,7 @@ header {
 	text-decoration: underline;
 }
 
-/*!  SI UTILISATEUR CONNECTÉ !*/
+/*!  SI UTILISATEUR CONNECTÉ MODIFICATION DE LA HOME PAGE !*/
 
 .edit-mode {
 	display: flex;
@@ -61,7 +57,7 @@ header {
 	justify-content: center;
 	flex-wrap: wrap;
 	gap: 30px;
-	margin-bottom: 2.5em;
+	margin-bottom: 90px;
 }
 
 #sub-user-modifications {
@@ -72,7 +68,7 @@ header {
 }
 
 #error-message-mail,
-#error-message-password {
+#error-message-password-logs {
 	display: block;
 	height: 14px;
 	text-align: center;
