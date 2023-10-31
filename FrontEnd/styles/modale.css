@@ -1,0 +1,106 @@
+:root {
+	--main-color: #b1663c;
+	--main-color-text: #3d3d3d;
+	--second-color: #1d6154;
+	--background-color: #fffef8;
+}
+
+#modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-wrapper {
+	position: fixed;
+	top: 35%;
+	left: 20%;
+	right: 20%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 60px 80px;
+	background-color: white;
+	border-radius: 10px;
+}
+
+.modal-wrapper .fa-xmark {
+	position: absolute;
+	right: 20px;
+	top: 15px;
+	font-size: 20px;
+	cursor: pointer;
+}
+
+.modal-wrapper h2 {
+	text-align: center;
+	font-family: 'Work Sans';
+	font-size: 2rem;
+	font-weight: 400;
+	color: black;
+	margin-bottom: 2.7rem;
+}
+
+#gallery-modal {
+	width: 100%;
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+	grid-column-gap: 5px;
+	grid-row-gap: 15px;
+	margin-bottom: 3rem;
+}
+
+#gallery-modal img {
+	width: 100%;
+}
+
+.modal-wrapper hr {
+	border: 1px solid var(--main-color-text);
+	width: 100%;
+	margin-bottom: 1rem;
+}
+/* Modification de la marge du btn  */
+.modal-wrapper .button {
+	height: 36px;
+	margin-bottom: 0;
+	font-size: 0.7rem;
+}
+
+@media screen and (max-width: 700px) {
+	.modal-wrapper {
+		padding: 30px 40px;
+	}
+
+	.modal-wrapper h2 {
+		font-size: 1.4rem;
+	}
+    .modal-wrapper .fa-xmark {
+		font-size: 15px;
+	}
+}
+
+@media screen and (max-width: 500px) {
+	#gallery-modal {
+		grid-template-columns: 1fr 1fr 1fr;
+	}
+	.modal-wrapper .fa-xmark {
+		font-size: 12px;
+	}
+}
+
+@media screen and (max-width: 350px) {
+	#gallery-modal {
+		grid-template-columns: 1fr 1fr;
+	}
+	.modal-wrapper .fa-xmark {
+		font-size: 10px;
+	}
+	.modal-wrapper .button {
+		height: 50px;
+		margin-bottom: 0;
+	}
+}
+

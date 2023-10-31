@@ -1,6 +1,5 @@
-//? Import des fonction nécessaire pour modifier la page d'accueil lors de la connexion de l'utilisateur //
-// ! Pour le moment pas besoin ! //
-// import { modficationHomePageUserLogIn } from './logIn.js'
+//? Import des fonction nécessaire pour modifier la modale//
+import { modaleCreation } from './modale.js'
 
 //? RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES TRAVAUX //
 
@@ -153,16 +152,19 @@ function addButtonModify() {
 	const newDiv = document.createElement('div')
 	const h2 = document.querySelector('#portfolio h2')
 	const subNewDiv = document.createElement('div')
+	const newAncre = document.createElement('a')
 	const newIcon = document.createElement('i')
-	const newPara = document.createElement('p')
+
 	newDiv.id = 'user-modifications'
 	h2.classList.add('user-connected-h2')
 	subNewDiv.id = 'sub-user-modifications'
+	newAncre.id = 'edit-btn'
+	newAncre.innerText = 'modifier'
+	newAncre.href = '#delet-modal'
 	newIcon.classList.add('fa-regular', 'fa-pen-to-square')
-	newPara.innerText = 'modifier'
 
 	subNewDiv.appendChild(newIcon)
-	subNewDiv.appendChild(newPara)
+	subNewDiv.appendChild(newAncre)
 	// Ajout du h2 Mes Projets dans la newDiv //
 	newDiv.appendChild(h2)
 	// Ajout de la subNewDiv dans la newDiv //
@@ -217,3 +219,10 @@ function inactivityCheck() {
 		console.log(elapsedTime)
 	}, 10000)
 }
+
+//? GESTION DE LA MODALE
+//* Écoute du clic sur le bouton "modifier"
+document.getElementById('edit-btn').addEventListener('click', () => {
+	console.log('hello')
+	modaleCreation('elementModal1')
+})

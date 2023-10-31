@@ -3,10 +3,6 @@ async function btnLogIn() {
 	document.querySelector('#logIn form').addEventListener('submit', (event) => {
 		event.preventDefault()
 		manageForm()
-		// ! Test
-		// let tokenTest = 'ieohfcsè§(!xsçfcngvin'
-		// window.sessionStorage.setItem('token', tokenTest)
-		// redirectionHomePage()
 	})
 }
 
@@ -88,23 +84,6 @@ function showErrorMessage(errorMessage) {
 		}
 	}
 }
-
-//Fonction qui permet d'afficher ou supprimer le message d'erreur dans le DOM si le champ email n'est pas correctement rempli
-// function generationMailErrorMessage(errorMessage) {
-// 	// let inputEmail = document.getElementById('logInEmail')
-// 	// console.log(inputEmail)
-// 	// inputEmail.setCustomValidity(errorMessage)
-// 	//Création d'une constant qui contiendra l'élement du DOM avec un id error-message
-// 	let spanErrorMessage = document.getElementById('error-message-mail')
-// 	spanErrorMessage.innerText = errorMessage
-// }
-
-//Fonction qui permet d'afficher ou supprimer le message d'erreur dans le DOM si le champ mot de passe n'est pas correctement rempli
-// function generationPasswordErrorMessage(errorMessage) {
-// 	//Création d'une constant qui contiendra l'élement du DOM avec un id error-message
-// 	let paraErrorMessage = document.getElementById('error-message-password')
-// 	paraErrorMessage.innerText = errorMessage
-// }
 
 async function validationAcces(logInEmail, logInPassword) {
 	try {
