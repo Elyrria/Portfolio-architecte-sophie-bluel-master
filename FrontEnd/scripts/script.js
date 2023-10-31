@@ -212,7 +212,7 @@ function inactivityCheck() {
 		const currentTime = Date.now()
 		const elapsedTime = currentTime - lastActivityTime
 		if (elapsedTime >= inactivityTimeout) {
-			resetSession
+			resetSession()
 		}
 		console.log(elapsedTime)
 	}, 10000)
