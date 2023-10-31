@@ -3,7 +3,10 @@ async function btnLogIn() {
 	document.querySelector('#logIn form').addEventListener('submit', (event) => {
 		event.preventDefault()
 		manageForm()
-		redirectionHomePage()
+		// ! Test
+		// let tokenTest = 'ieohfcsè§(!xsçfcngvin'
+		// window.sessionStorage.setItem('token', tokenTest)
+		// redirectionHomePage()
 	})
 }
 
@@ -57,31 +60,32 @@ function passwordValidty(logInPassword) {
  *  @param {String} erroMessage
  */
 function showErrorMessage(errorMessage) {
-	// La saisie du mail n'est pas valide
-	if (errorMessage === "L'Email ne respecte pas les critères pour être valide") {
-		let spanErrorMessage = document.getElementById('error-message-mail')
-		spanErrorMessage.innerText = errorMessage
-	} else {
-		let spanErrorMessage = document.getElementById('error-message-mail')
-		spanErrorMessage.innerText = ''
-	}
+	//Création d'une constant qui contiendra l'élement du DOM avec un id error-message
+	let spanErrorMessageMail = document.getElementById('error-message-mail')
+	let spanErrorMessagePassword = document.getElementById('error-message-password-logs')
+	let spanErrorMessageLogs = document.getElementById('error-message-password-logs')
+
+	console.error(errorMessage)
+
+	// La saisie de l'email n'est pas valide
+	errorMessage === "L'Email ne respecte pas les critères pour être valide"
+		? (spanErrorMessageMail.innerText = errorMessage)
+		: (spanErrorMessageMail.innerText = '')
+
+	console.log(spanErrorMessageMail)
+
 	// La saisie du mot de passe n'est pas valide
+
 	if (errorMessage === 'Le mot de passe ne peut pas être vide') {
-		//Création d'une constant qui contiendra l'élement du DOM avec un id error-message
-		let paraErrorMessage = document.getElementById('error-message-password')
-		paraErrorMessage.innerText = errorMessage
+		spanErrorMessagePassword.innerText = errorMessage
 	} else {
-		//Création d'une constant qui contiendra l'élement du DOM avec un id error-message
-		let paraErrorMessage = document.getElementById('error-message-password')
-		paraErrorMessage.innerText = ''
-	}
-	//Erreur d'identification
-	if (errorMessage === 'Erreur dans l’identifiant ou le mot de passe') {
-		let paraErrorMessage = document.getElementById('error-message-password')
-		paraErrorMessage.innerText = errorMessage
-	} else {
-		let paraErrorMessage = document.getElementById('error-message-password')
-		paraErrorMessage.innerText = ''
+		spanErrorMessagePassword.innerText = ''
+		// Erreur dans l’identifiant ou le mot de passe
+		if (errorMessage === 'Erreur dans l’identifiant ou le mot de passe') {
+			spanErrorMessageLogs.innerText = errorMessage
+		} else {
+			spanErrorMessageLogs.innerText = ''
+		}
 	}
 }
 
@@ -144,7 +148,7 @@ async function validationAcces(logInEmail, logInPassword) {
 		console.error("Une erreur s'est produite", error)
 	}
 
-	// redirectionHomePage()
+	redirectionHomePage()
 }
 
 //* Function qui redirige vers la page d'accueil
