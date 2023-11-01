@@ -17,16 +17,15 @@ export async function refreshWorks(forceFlag) {
 			})
 			if (response.ok) {
 				// Stockage dans le localStorag //
-				works = await response.json()
+				works = await response.json() //!! BUG  !!!
 				works = JSON.stringify(works)
 				window.localStorage.setItem('works', works)
-				// Sinon parse.works //
 			} else {
 				//Gérer l'erreur ici
 			}
 		} else {
+			// Sinon parse.works //
 			works = JSON.parse(works)
-			// ! PENSER À RÉACTUALISER LE LOCALSTORAGE SI RAJOUT D'UN WORK ET QUAND L'UTILISATEUR CLIC SUR LE FILTRE TOUS ! //
 		}
 		galleryGeneration(works)
 	} catch (error) {}
@@ -39,14 +38,15 @@ function galleryGeneration(works) {
 	const gallery = document.querySelector('.gallery')
 	gallery.innerHTML = ''
 	for (let i = 0; i < works.length; i++) {
+		const item = works[i]
 		//Création d'une balise figure //
 		const figureElement = document.createElement('figure')
 		//Création de la balise img //
 		const imgElement = document.createElement('img')
-		imgElement.src = works[i].imageUrl
+		imgElement.src = item.imageUrl
 		//Création de la balise figcaptation //
 		const figCaptationElement = document.createElement('figcaptation')
-		figCaptationElement.innerText = works[i].title
+		figCaptationElement.innerText = item.title
 		//Ajout des balises img et figcaptation dans la balise figure //
 		figureElement.appendChild(imgElement)
 		figureElement.appendChild(figCaptationElement)
@@ -55,8 +55,7 @@ function galleryGeneration(works) {
 	}
 }
 
-//* RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES CATÉGORIE //
-
+//? RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES CATÉGORIE //
 //* Récupération des catégories sur le localStorage //
 let category = window.localStorage.getItem('category')
 //* Si pas présent récupération via l'API et stockage dans le localStorage //
@@ -78,10 +77,10 @@ const divElement = document.createElement('div')
 divElement.classList.add('filters')
 
 // * Création du filtre Tous //
-const filtersBtn = document.createElement('button')
-filtersBtn.innerText = 'Tous'
-filtersBtn.name = 'Tous'
-divElement.appendChild(filtersBtn)
+const filterBtnTous = document.createElement('button')
+filterBtnTous.innerText = 'Tous'
+filterBtnTous.name = 'Tous'
+divElement.appendChild(filterBtnTous)
 
 //* Boucle qui permet d'ajouter autant de bouton filtre qu'il a de catégorie dans le tableau category //
 const filtersBtn = document.createElement('button')
@@ -117,13 +116,14 @@ filtersBtns.forEach((button) => {
 
 //* Fonction qui permet de supprimer la gallery du DOM et de l'afficher de nouveau avec la liste filtrée //
 function filterDeletAndDisplay(filterName) {
+	let works = window.localStorage.getItem('works')
 	if (filterName === 'Tous') {
 		document.querySelector('.gallery').innerHTML = ''
 		galleryGeneration(works)
 	} else {
-		const filteredWorks = works.filter((work) => work.category.name === filterName)
+		const filterdWorks = works.filter((work) => work.category.name === filterName)
 		document.querySelector('.gallery').innerHTML = ''
-		galleryGeneration(filteredWorks)
+		galleryGeneration(filterdWorks)
 	}
 }
 

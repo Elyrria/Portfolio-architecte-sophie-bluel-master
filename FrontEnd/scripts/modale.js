@@ -70,6 +70,7 @@ function modalElementsDeletWork() {
 	const trash = document.querySelectorAll('.fa-trash-can')
 	//Pour chaque élément contenu dans la constante trash ajoute un écouteur d'évenement
 	for (let trashElement of trash) {
+		//! Essayer avec un forEach()
 		trashElement.addEventListener('click', (e) => {
 			e.preventDefault()
 			deletWork(trashElement.dataset.id)
