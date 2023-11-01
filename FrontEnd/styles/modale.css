@@ -7,6 +7,9 @@
 
 #modal {
 	position: fixed;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -15,92 +18,139 @@
 }
 
 .modal-wrapper {
-	position: fixed;
-	top: 35%;
-	left: 20%;
-	right: 20%;
+	max-width: calc(100vw - 30%);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 60px 80px;
 	background-color: white;
 	border-radius: 10px;
 }
 
-.modal-wrapper .fa-xmark {
-	position: absolute;
-	right: 20px;
-	top: 15px;
-	font-size: 20px;
+.modal-wrapper .iconsXMarkArrowReturn {
+	display: flex;
+	width: 100%;
+	justify-content: space-between;
+	padding: 20px;
+}
+
+.fa-arrow-left,
+.fa-xmark {
 	cursor: pointer;
+	font-size: 20px;
+	color: black;
+}
+.fa-arrow-left {
+	visibility: hidden;
 }
 
 .modal-wrapper h2 {
 	text-align: center;
 	font-family: 'Work Sans';
-	font-size: 2rem;
+	font-size: 1.7rem;
 	font-weight: 400;
 	color: black;
-	margin-bottom: 2.7rem;
+	margin-bottom: 100px;
 }
 
-#gallery-modal {
-	width: 100%;
+#modal-gallery {
+	width: 75%;
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-	grid-column-gap: 5px;
+	grid-column-gap: 8px;
 	grid-row-gap: 15px;
-	margin-bottom: 3rem;
+	margin-bottom: 40px;
+	overflow: scroll;
 }
 
-#gallery-modal img {
+#modal-gallery figure {
+	position: relative;
+}
+
+#modal-gallery img {
 	width: 100%;
+}
+
+#modal-gallery .trash-icon {
+	position: absolute;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: black;
+	border-radius: 6px;
+	top: 7px;
+	right: 7px;
+	width: 17px;
+	height: 17px;
+}
+
+#modal-gallery .fa-trash-can {
+	color: white;
+	cursor: pointer;
+	font-size: 80%;
 }
 
 .modal-wrapper hr {
 	border: 1px solid var(--main-color-text);
-	width: 100%;
-	margin-bottom: 1rem;
+	width: 75%;
+	padding-left: 50px;
+	margin: 0 0 35px 0;
 }
 /* Modification de la marge du btn  */
 .modal-wrapper .button {
-	height: 36px;
-	margin-bottom: 0;
+	width: 45%;
+	height: 35px;
+	margin: 0 0 40px 0;
 	font-size: 0.7rem;
 }
 
-@media screen and (max-width: 700px) {
+@media screen and (min-width: 1140px) {
 	.modal-wrapper {
-		padding: 30px 40px;
+		max-width: 1140px;
 	}
+	#modal-gallery .trash-icon {
+		width: 30px;
+		height: 30px;
+	}
+	#modal-gallery .fa-trash-can {
+		font-size: 100%;
+	}
+}
 
+@media screen and (max-width: 750px) {
+	#modal-gallery {
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+	}
 	.modal-wrapper h2 {
 		font-size: 1.4rem;
 	}
-    .modal-wrapper .fa-xmark {
+	.fa-arrow-left,
+	.fa-xmark {
 		font-size: 15px;
 	}
 }
 
-@media screen and (max-width: 500px) {
-	#gallery-modal {
+@media screen and (max-width: 550px) {
+	#modal-gallery {
 		grid-template-columns: 1fr 1fr 1fr;
+		max-height: calc(28vh);
 	}
-	.modal-wrapper .fa-xmark {
+	.fa-arrow-left,
+	.fa-xmark {
 		font-size: 12px;
 	}
 }
 
 @media screen and (max-width: 350px) {
-	#gallery-modal {
+	#modal-gallery {
 		grid-template-columns: 1fr 1fr;
+		max-height: calc(24vh);
 	}
-	.modal-wrapper .fa-xmark {
+	.fa-arrow-left,
+	.fa-xmark {
 		font-size: 10px;
 	}
 	.modal-wrapper .button {
+		width: 70%;
 		height: 50px;
-		margin-bottom: 0;
 	}
 }
-

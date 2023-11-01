@@ -1,12 +1,12 @@
 //* Écoute de l'evement submit du logIn et vérification des informations + message d'erreur
-async function btnLogIn() {
+async function logInbtn() {
 	document.querySelector('#logIn form').addEventListener('submit', (event) => {
 		event.preventDefault()
 		manageForm()
 	})
 }
 
-btnLogIn()
+logInbtn()
 //* Fonction qui permet de gérer le formulaire en demandant la vérification de l'ensemble des champs
 function manageForm() {
 	try {
@@ -16,7 +16,9 @@ function manageForm() {
 		// Récupération du mot de passe //
 		let logInPassword = document.getElementById('logInPassword').value
 		passwordValidty(logInPassword)
+		// Si pas d'erreur de saisi dans les champs (mdp et email) alors vide les précédents messages d'erreur  //
 		showErrorMessage('')
+		//Appel de la fonction qui permet de vérifier si le mot de passe et l'adresse email sont valides //
 		validationAcces(logInEmail, logInPassword)
 
 		// Gestion des erreurs //

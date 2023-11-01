@@ -1,5 +1,5 @@
 //? Import des fonction nécessaire pour modifier la modale//
-import { modaleCreation } from './modale.js'
+import { modalCreation, modalClosure } from './modale.js'
 
 //? RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES TRAVAUX //
 
@@ -61,20 +61,20 @@ const divElement = document.createElement('div')
 divElement.classList.add('filters')
 
 // * Création du filtre Tous //
-const buttonFilter = document.createElement('button')
-buttonFilter.innerText = 'Tous'
-buttonFilter.name = 'Tous'
-divElement.appendChild(buttonFilter)
+const filtersBtn = document.createElement('button')
+filtersBtn.innerText = 'Tous'
+filtersBtn.name = 'Tous'
+divElement.appendChild(filtersBtn)
 
 //* Boucle qui permet d'ajouter autant de bouton filtre qu'il a de catégorie dans le tableau category //
 for (let i = 0; i < category.length; i++) {
-	const buttonFilter = document.createElement('button')
+	const filtersBtn = document.createElement('button')
 	// .replace permet de modifier Hotel par Hôtel //
-	buttonFilter.innerText = category[i].name.replace(/Ho/g, 'Hô')
+	filtersBtn.innerText = category[i].name.replace(/Ho/g, 'Hô')
 	// .replace permet de rechercher une string entre les deux slashs et le g exécute la recherche le deuxième argument remplace la string si trouvée //
-	buttonFilter.name = `${category[i].name.replace(/ /g, '').replace(/&r/g, 'EtR')}`
+	filtersBtn.name = `${category[i].name.replace(/ /g, '').replace(/&r/g, 'EtR')}`
 	// Ajout du bouton[i] dans la divElement //
-	divElement.appendChild(buttonFilter)
+	divElement.appendChild(filtersBtn)
 	//! Il faudrait modifier la base de donnée catégorie pour changer le nom de la catégorie "hotel & restaurants" par "Hôtel & restaurant" //
 }
 // Ajout de la divElement qui contient tous les filtre avant l'enfant .gallery //
@@ -85,9 +85,9 @@ const categoryName = category.map((name) => name.name)
 // Ajout au tableau la string Tous //
 categoryName.push('Tous')
 //* Écoute de chaque button filters //
-const btnsFilters = document.querySelectorAll('.filters button')
+const filtersBtns = document.querySelectorAll('.filters button')
 // Écoute de l'ensemble des boutons filtre //
-btnsFilters.forEach((button) => {
+filtersBtns.forEach((button) => {
 	button.addEventListener('click', (event) => {
 		// récupération de l'évenement dans la variable filterName //
 		let filterName = event.target.name
@@ -110,7 +110,7 @@ function filterDeletAndDisplay(filterName) {
 	}
 }
 
-//? MODIFICATION DE LA PAGE SI L'UTILISATEUR CONNECTÉ //
+//? MODIFICATION DE LA PAGE SI L'UTILISATEUR EST CONNECTÉ //
 //* Fonction qui permet d'appeler toutes les fonctions qui modifireont la page si l'utilisteur est connecté //
 function modficationHomePageUserLogIn() {
 	newDivLogIn()
@@ -126,6 +126,7 @@ function newDivLogIn() {
 	const newPara = document.createElement('p')
 	newDiv.classList.add('edit-mode')
 	newIcon.classList.add('fa-regular', 'fa-pen-to-square')
+	newIcon.setAttribute('aria-hidden', 'true')
 	newPara.innerText = 'Mode édition'
 	newDiv.appendChild(newIcon)
 	newDiv.appendChild(newPara)
@@ -162,7 +163,7 @@ function addButtonModify() {
 	newAncre.innerText = 'modifier'
 	newAncre.href = '#delet-modal'
 	newIcon.classList.add('fa-regular', 'fa-pen-to-square')
-
+	newIcon.setAttribute('aria-hidden', 'true')
 	subNewDiv.appendChild(newIcon)
 	subNewDiv.appendChild(newAncre)
 	// Ajout du h2 Mes Projets dans la newDiv //
@@ -184,27 +185,28 @@ const token = JSON.parse(window.sessionStorage.getItem('token'))
 // Si le Id et le token sont différent d'une chaine de caractère vide alors //
 if (token.userId !== '' && token.token !== '') {
 	modficationHomePageUserLogIn()
+	//Active la fonction qui permet de vérfier le temps d'inactivité de l'utilisateur //
 	inactivityCheck()
 }
 
-//? GESTION DE LA DÉCONNEXION
+//? GESTION DE LA DÉCONNEXION //
 //* Supprime le token du sessionStorage et réactualise la page  //
 function resetSession() {
 	window.sessionStorage.removeItem('token')
 	location.reload()
 }
-//* Gestion de la déconnexion au clic sur le btn logOut
+//* Gestion de la déconnexion au clic sur le btn logOut //
 document.getElementById('logOut').addEventListener('click', () => {
 	resetSession()
 })
 
-//* Vérification d'inactivité
-
+//? VÉRIFICATION D'INACTIVITÉ //
 let lastActivityTime = Date.now()
+//* Fonction qui permet de mettre à jour la date/heure de la dernière activité de l'utilisateur //
 function updateLastActivityTime() {
 	lastActivityTime = Date.now()
 }
-
+//* Fonction qui permet de vérifier le temps d'inactivité (si supérieur ou égal à 15 minutes déconnexion et appel de la fonction resetSession()) //
 function inactivityCheck() {
 	const inactivityTimeout = 15 * 60 * 1000
 
@@ -220,9 +222,8 @@ function inactivityCheck() {
 	}, 10000)
 }
 
-//? GESTION DE LA MODALE
-//* Écoute du clic sur le bouton "modifier"
+//? GESTION DE LA MODALE //
+//* Écoute du clic sur le bouton "modifier" //
 document.getElementById('edit-btn').addEventListener('click', () => {
-	console.log('hello')
-	modaleCreation('elementModal1')
+	modalCreation('modalElementsDeletWork')
 })
