@@ -1,25 +1,43 @@
 //? Import des fonction nécessaire pour modifier la modale//
-import { modalCreation, modalClosure } from './modale.js'
+import { modalCreation } from './modale.js'
 
 //? RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES TRAVAUX //
 
-//* Récupération des travaux sur le localStorage //
-let works = window.localStorage.getItem('works')
-//* Si pas présent récupération via l'API et stockage dans le localStorage //
-if (works === null) {
-	// Récupération via l'API Swagger //
-	works = await fetch('http://localhost:5678/api/works').then((works) => works.json())
-	// Stockage dans le localStorag //
-	const worksValue = JSON.stringify(works)
-	window.localStorage.setItem('works', worksValue)
-	// Sinon parse.works //
-} else {
-	works = JSON.parse(works)
-	// ! PENSER À RÉACTUALISER LE LOCALSTORAGE SI RAJOUT D'UN WORK ET QUAND L'UTILISATEUR CLIC SUR LE FILTRE TOUS ! //
+export async function refreshWorks(forceFlag) {
+	try {
+		//* Récupération des travaux sur le localStorage //
+		let works = window.localStorage.getItem('works')
+		//* Si pas présent récupération via l'API et stockage dans le localStorage //
+		if (forceFlag || works === null) {
+			// Récupération via l'API Swagger //
+			const response = await fetch('http://localhost:5678/api/works', {
+				headers: {
+					accept: 'application/json',
+				},
+			})
+			if (response.ok) {
+				// Stockage dans le localStorag //
+				works = await response.json()
+				works = JSON.stringify(works)
+				window.localStorage.setItem('works', works)
+				// Sinon parse.works //
+			} else {
+				//Gérer l'erreur ici
+			}
+		} else {
+			works = JSON.parse(works)
+			// ! PENSER À RÉACTUALISER LE LOCALSTORAGE SI RAJOUT D'UN WORK ET QUAND L'UTILISATEUR CLIC SUR LE FILTRE TOUS ! //
+		}
+		galleryGeneration(works)
+	} catch (error) {}
 }
+
+refreshWorks(false)
 
 //* GÉNÉRATION DES TRAVAUX SUR LA PAGE D'ACCUEIL //
 function galleryGeneration(works) {
+	const gallery = document.querySelector('.gallery')
+	gallery.innerHTML = ''
 	for (let i = 0; i < works.length; i++) {
 		//Création d'une balise figure //
 		const figureElement = document.createElement('figure')
@@ -33,10 +51,9 @@ function galleryGeneration(works) {
 		figureElement.appendChild(imgElement)
 		figureElement.appendChild(figCaptationElement)
 		//Ajout de la balise figure dans la div gallery //
-		document.querySelector('.gallery').appendChild(figureElement)
+		gallery.appendChild(figureElement)
 	}
 }
-galleryGeneration(works)
 
 //* RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES CATÉGORIE //
 
@@ -67,8 +84,8 @@ filtersBtn.name = 'Tous'
 divElement.appendChild(filtersBtn)
 
 //* Boucle qui permet d'ajouter autant de bouton filtre qu'il a de catégorie dans le tableau category //
+const filtersBtn = document.createElement('button')
 for (let i = 0; i < category.length; i++) {
-	const filtersBtn = document.createElement('button')
 	// .replace permet de modifier Hotel par Hôtel //
 	filtersBtn.innerText = category[i].name.replace(/Ho/g, 'Hô')
 	// .replace permet de rechercher une string entre les deux slashs et le g exécute la recherche le deuxième argument remplace la string si trouvée //
@@ -155,7 +172,6 @@ function addButtonModify() {
 	const subNewDiv = document.createElement('div')
 	const newAncre = document.createElement('a')
 	const newIcon = document.createElement('i')
-
 	newDiv.id = 'user-modifications'
 	h2.classList.add('user-connected-h2')
 	subNewDiv.id = 'sub-user-modifications'
@@ -218,7 +234,6 @@ function inactivityCheck() {
 		if (elapsedTime >= inactivityTimeout) {
 			resetSession()
 		}
-		console.log(elapsedTime)
 	}, 10000)
 }
 

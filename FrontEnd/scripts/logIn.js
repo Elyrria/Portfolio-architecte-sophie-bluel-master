@@ -94,7 +94,6 @@ async function validationAcces(logInEmail, logInPassword) {
 			email: logInEmail,
 			password: logInPassword,
 		}
-		console.log(JSON.stringify(bodyFetch))
 		//* Fetch pour récupération de l'id et token avec le verbe POST + headers et body
 		const reponse = await fetch('http://localhost:5678/api/users/login', {
 			method: 'POST',
@@ -134,5 +133,5 @@ async function validationAcces(logInEmail, logInPassword) {
 
 //* Function qui redirige vers la page d'accueil
 async function redirectionHomePage() {
-	document.location.href = 'http://127.0.0.1:5500/FrontEnd/index.html'
+	document.location.href = 'http://127.0.0.1:5501/FrontEnd/index.html'
 }

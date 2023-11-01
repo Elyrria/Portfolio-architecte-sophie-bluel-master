@@ -1,3 +1,4 @@
+import { refreshWorks } from './script.js'
 //? CRÉATION DE LA MODALE
 //* Fonction qui permet de créer la modale
 export function modalCreation(elementModal) {
@@ -12,35 +13,35 @@ export function modalCreation(elementModal) {
 	//Création du modalWrapper
 	const modalWrapper = document.createElement('div')
 	modalWrapper.classList.add('modal-wrapper')
-	//Création d'une div qui contiendra la xMark
+	//Création d'une div qui contiendra la xMark //
 	const moadalDivXMark = document.createElement('div')
 	moadalDivXMark.classList.add('iconsXMarkArrowReturn')
-	//Création de la flèche de retour de la modale ajout travau
+	//Création de la flèche de retour de la modale ajout travau //
 	const modalArrowReturn = document.createElement('i')
 	modalArrowReturn.classList.add('fa-solid', 'fa-arrow-left')
 	modalArrowReturn.setAttribute('aria-hidden', 'true')
-	//Création de la croix de fermeture de la modale
+	//Création de la croix de fermeture de la modale //
 	const modalXMark = document.createElement('i')
 	modalXMark.classList.add('fa-solid', 'fa-xmark')
 	modalXMark.setAttribute('aria-hidden', 'true')
-	//Ajout de la flèche retour et de la croix dans leur conteneur
+	//Ajout de la flèche retour et de la croix dans leur conteneur //
 	moadalDivXMark.appendChild(modalArrowReturn)
 	moadalDivXMark.appendChild(modalXMark)
-	//Ajout de la div qui contient la croix de fermture dans le modalWrapper
+	//Ajout de la div qui contient la croix de fermture dans le modalWrapper //
 	modalWrapper.appendChild(moadalDivXMark)
-	//Ajout de modalWrapper dans le conaineurModal
+	//Ajout de modalWrapper dans le conaineurModal //
 	modalContaineur.appendChild(modalWrapper)
 	document.querySelector('.gallery').before(modalContaineur)
 
 	if (modalDisplay === 'modalElementsDeletWork') {
 		modalElementsDeletWork()
 	}
-	// elementModal === 'elementModal1' ? modalElements1() : modalElements2()
+	// elementModal === 'elementModal1' ? modalElements1() : modalElements2() /
 	addAttributAriaHidden()
 	modalClosure()
 }
 
-//* Fonction qui permet de créer le contenu de la modale pour supprimer des travaux
+//* Fonction qui permet de créer le contenu de la modale pour supprimer des travaux //
 function modalElementsDeletWork() {
 	// Création du titre pour la modale de suppresion des travaux
 	const modalH2 = document.createElement('h2')
@@ -65,8 +66,17 @@ function modalElementsDeletWork() {
 	modalWrapper.appendChild(modalBtn)
 	//* Ajout de l'appel à la fonction qui permet d'ajouter tous les travaux à la modale
 	modalGalleryGeneration()
+	// Écoute d'évement sur chaque poubelle de la galerie
+	const trash = document.querySelectorAll('.fa-trash-can')
+	//Pour chaque élément contenu dans la constante trash ajoute un écouteur d'évenement
+	for (let trashElement of trash) {
+		trashElement.addEventListener('click', (e) => {
+			e.preventDefault()
+			deletWork(trashElement.dataset.id)
+		})
+	}
 }
-//* Fonction qui permet d'ajouter l'attribut aria-hidden à tous les éléments qui non pas besoin d'être visible quand la modale est ouverte
+//* Fonction qui permet d'ajouter l'attribut aria-hidden à tous les éléments qui non pas besoin d'être visible quand la modale est ouverte //
 function addAttributAriaHidden() {
 	//Ajout de l'attribut aria-hidden pour qu'il ne reste plus que la modale de visible pour les outils d'accésibilité
 	//! Si je rajoute une class spécifique à tous ces éléments pour ne faire qu'un ligne ?
@@ -79,7 +89,7 @@ function addAttributAriaHidden() {
 	document.querySelector('.gallery').setAttribute('aria-hidden', true)
 }
 
-//* Fonction qui permet de supprimer l'attribut aria-hidden à tous les éléments qui non pas besoin d'être visible quand la modale est ouverte
+//* Fonction qui permet de supprimer l'attribut aria-hidden à tous les éléments qui non pas besoin d'être visible quand la modale est ouverte //
 function removeAttributAriaHidden() {
 	//Sippression de l'attribut aria-hidden pour qu'il ne reste plus que la modale de visible pour les outils d'accésibilité
 	//! Si je rajoute une class spécifique à tous ces éléments pour ne faire qu'un ligne ?
@@ -92,16 +102,18 @@ function removeAttributAriaHidden() {
 	document.querySelector('.gallery').removeAttribute('aria-hidden', true)
 }
 
-//* Fonction qui permet d'importer tous les travaux dans la modale
+//* Fonction qui permet d'importer tous les travaux dans la modale //
 function modalGalleryGeneration() {
 	const works = JSON.parse(window.localStorage.getItem('works'))
-	console.log(works)
+	const modalGallery = document.getElementById('modal-gallery')
+	modalGallery.innerHTML = ''
 	for (let i = 0; i < works.length; i++) {
+		const item = works[i]
 		// Création d'une balise figure //
 		const figureElement = document.createElement('figure')
 		// Création de la balise img //
 		const imgElement = document.createElement('img')
-		imgElement.src = works[i].imageUrl
+		imgElement.src = item.imageUrl
 		// Création de la div qui va contenir l'icone poubelle //
 		const divTrashIcon = document.createElement('div')
 		divTrashIcon.classList.add('trash-icon')
@@ -109,17 +121,18 @@ function modalGalleryGeneration() {
 		const trashIcon = document.createElement('i')
 		trashIcon.classList.add('fa-solid', 'fa-trash-can')
 		trashIcon.setAttribute('aria-hidden', 'true')
+		trashIcon.dataset.id = item.id
 		// Ajout de l'icone poubelle dans son conteneur trashIcon //
 		divTrashIcon.appendChild(trashIcon)
 		// Ajout de la balise img et de la div contenant l'icone poubelle à la balise figure //
 		figureElement.appendChild(imgElement)
 		figureElement.appendChild(divTrashIcon)
 		// Ajout de la balise figure dans la div gallery //
-		document.getElementById('modal-gallery').appendChild(figureElement)
+		modalGallery.appendChild(figureElement)
 	}
 }
-
-export function modalClosure() {
+//* Fonction qui permet de fermer la modale //
+function modalClosure() {
 	document.querySelector('#modal .modal-wrapper .iconsXMarkArrowReturn .fa-xmark').addEventListener(
 		'click',
 		() => {
@@ -128,12 +141,31 @@ export function modalClosure() {
 		}
 	)
 	document.getElementById('modal').addEventListener('click', (e) => {
-		// Permet d'éviter de fermer la modale si on clique dans l'enfant de la cide écoutée 
+		// Permet d'éviter de fermer la modale si on clique dans l'enfant de la cide écoutée
 		if (e.target === e.currentTarget) {
 			document.getElementById('modal').remove()
 			removeAttributAriaHidden()
 		}
 	})
 }
-//! Rajourer les aria pour chaque logo de la bibliothèque fontAwsome
-//Créer une fonction qui ferme la modale et l'importer sur script.js avec un ecouteur d'évenement sur la croix et l'extérieur de la modal
+/**
+ ** Fonction qui permet de supprimer un travail //
+ *  @param {number} trashElement
+ */
+async function deletWork(trashElement) {
+	const tokenData = JSON.parse(window.sessionStorage.getItem('token'))
+	const token = `Bearer ${tokenData.token}`
+	try {
+		const reponse = await fetch(`http://localhost:5678/api/works/${trashElement}`, {
+			method: 'DELETE',
+			headers: {
+				accept: '*/*',
+				Authorization: token,
+			},
+		})
+		if (reponse.ok) {
+			refreshWorks(true)
+			modalGalleryGeneration()
+		}
+	} catch (error) {}
+}
