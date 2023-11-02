@@ -2,7 +2,6 @@
 import { modalCreation } from './modale.js'
 
 //? RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES TRAVAUX //
-
 export async function refreshWorks(forceFlag) {
 	try {
 		//* Récupération des travaux sur le localStorage //
@@ -15,23 +14,30 @@ export async function refreshWorks(forceFlag) {
 					accept: 'application/json',
 				},
 			})
-			if (response.ok) {
-				// Stockage dans le localStorag //
-				works = await response.json() //!! BUG  !!!
-				works = JSON.stringify(works)
-				window.localStorage.setItem('works', works)
-			} else {
+			if (!response.ok) {
 				//Gérer l'erreur ici
+				throw new Error(`HTTP ${response.status}`)
+			} else if (response.ok) {
+				let responseData = await response.json()
+				// Rajout d'un appel de la fonction avant d'utiliser la méthode stringify sur works
+				galleryGeneration(responseData)
+				// Stockage dans le localStorag //
+				responseData = JSON.stringify(responseData)
+				window.localStorage.setItem('works', responseData)
 			}
 		} else {
 			// Sinon parse.works //
 			works = JSON.parse(works)
+			galleryGeneration(works)
 		}
-		galleryGeneration(works)
-	} catch (error) {}
+	} catch (error) {
+		console.error("Une erreur s'est produite", error)
+	}
 }
 
 refreshWorks(false)
+genrationContaineurFilter()
+refreshCategory(false)
 
 //* GÉNÉRATION DES TRAVAUX SUR LA PAGE D'ACCUEIL //
 function galleryGeneration(works) {
@@ -57,66 +63,98 @@ function galleryGeneration(works) {
 
 //? RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES CATÉGORIE //
 //* Récupération des catégories sur le localStorage //
-let category = window.localStorage.getItem('category')
-//* Si pas présent récupération via l'API et stockage dans le localStorage //
-if (category === null) {
-	// Récupération via l'API Swagger //
-	category = await fetch('http://localhost:5678/api/categories').then((category) => category.json())
-	// Stockage dans le localStorag //
-	const categoryValue = JSON.stringify(category)
-	window.localStorage.setItem('category', categoryValue)
-	// Sinon parse.works //
-} else {
-	category = JSON.parse(category)
-	// ! PENSER À RÉACTUALISER LE LOCALSTORAGE SI RAJOUT D'UN WORK ET QUAND L'UTILISATEUR CLIC SUR LE FILTRE TOUS ! //
+async function refreshCategory(forceFlag) {
+	let category = window.localStorage.getItem('category')
+	//* Si pas présent récupération via l'API et stockage dans le localStorage //
+	try {
+		if (forceFlag || category === null) {
+			// Récupération via l'API Swagger //
+			const response = await fetch('http://localhost:5678/api/categories', {
+				accept: 'application/json',
+			})
+
+			if (!response.ok) {
+				//Gérer l'erreur ici
+				throw new Error(`HTTP ${response.status}`)
+			} else if (response.ok) {
+				// Stockage dans le localStorag //
+				let responseData = await response.json()
+				creatingFilter(responseData)
+				listenFilter(responseData)
+				// Stockage dans le localStorag //
+				responseData = JSON.stringify(responseData)
+				window.localStorage.setItem('category', responseData)
+			}
+		} else {
+			// Sinon parse.category //
+			category = JSON.parse(category)
+			creatingFilter(category)
+			listenFilter(category)
+		}
+		//Si tous est okay appel de la fonction listenFilter()
+	} catch (error) {
+		console.error("Une erreur s'est produite", error)
+	}
+}
+
+function genrationContaineurFilter() {
+	let divElement = document.createElement('div')
+	divElement.classList.add('filters')
+	document.querySelector('.gallery').before(divElement)
 }
 
 //? CRÉATION DES FILTRES //
-// Création de la div et ajout de la class filters //
-const divElement = document.createElement('div')
-divElement.classList.add('filters')
-
-// * Création du filtre Tous //
-const filterBtnTous = document.createElement('button')
-filterBtnTous.innerText = 'Tous'
-filterBtnTous.name = 'Tous'
-divElement.appendChild(filterBtnTous)
-
-//* Boucle qui permet d'ajouter autant de bouton filtre qu'il a de catégorie dans le tableau category //
-const filtersBtn = document.createElement('button')
-for (let i = 0; i < category.length; i++) {
-	// .replace permet de modifier Hotel par Hôtel //
-	filtersBtn.innerText = category[i].name.replace(/Ho/g, 'Hô')
-	// .replace permet de rechercher une string entre les deux slashs et le g exécute la recherche le deuxième argument remplace la string si trouvée //
-	filtersBtn.name = `${category[i].name.replace(/ /g, '').replace(/&r/g, 'EtR')}`
-	// Ajout du bouton[i] dans la divElement //
-	divElement.appendChild(filtersBtn)
-	//! Il faudrait modifier la base de donnée catégorie pour changer le nom de la catégorie "hotel & restaurants" par "Hôtel & restaurant" //
+function creatingFilter(category) {
+	const divElement = document.querySelector('.filters')
+	divElement.innerHTML = ''
+	// * Création du filtre Tous //
+	const filterBtnTous = document.createElement('button')
+	filterBtnTous.innerText = 'Tous'
+	filterBtnTous.name = 'Tous'
+	divElement.appendChild(filterBtnTous)
+	//* Boucle qui permet d'ajouter autant de bouton filtre qu'il a de catégorie dans le tableau category //
+	for (let i = 0; i < category.length; i++) {
+		const filtersBtn = document.createElement('button')
+		const item = category[i]
+		// .replace permet de modifier Hotel par Hôtel //
+		//! Attention si beaucoup d'éléments dans catégorie //
+		filtersBtn.innerText = item.name.replace(/Ho/g, 'Hô')
+		// .replace permet de rechercher une string entre les deux slashs et le g exécute la recherche le deuxième argument remplace la string si trouvée //
+		filtersBtn.name = `${item.name.replace(/ /g, '').replace(/&r/g, 'EtR')}`
+		// Ajout du bouton[i] dans la divElement //
+		divElement.appendChild(filtersBtn)
+	}
 }
-// Ajout de la divElement qui contient tous les filtre avant l'enfant .gallery //
-document.querySelector('.gallery').before(divElement)
 
-//* Récupération des noms de chaque catégories et stockage dans la const categoryName //
-const categoryName = category.map((name) => name.name)
-// Ajout au tableau la string Tous //
-categoryName.push('Tous')
-//* Écoute de chaque button filters //
-const filtersBtns = document.querySelectorAll('.filters button')
-// Écoute de l'ensemble des boutons filtre //
-filtersBtns.forEach((button) => {
-	button.addEventListener('click', (event) => {
-		// récupération de l'évenement dans la variable filterName //
-		let filterName = event.target.name
-		// Remplacement si évenement de la string "Hôtel & restaurant" par la même string contenu dans le tableau //
-		filterName = filterName.replace(/HotelsEtRestaurants/g, 'Hotels & restaurants')
-		// Vérification que la string de l'évenement est bien présente dans le tableau categoryName et applique la fonction filterDeletAndDisplay //
-		categoryName.includes(filterName) ? filterDeletAndDisplay(filterName) : console.log('erreur')
+function listenFilter(category) {
+	//* Récupération des noms de chaque catégories et stockage dans la const categoryName //
+	const categoryName = category.map((name) => name.name)
+	// Ajout au tableau la string Tous //
+	categoryName.push('Tous')
+	//* Écoute de chaque button filters //
+	const filtersBtns = document.querySelectorAll('.filters button')
+	// Écoute de l'ensemble des boutons filtre //
+	filtersBtns.forEach((button) => {
+		button.addEventListener('click', (event) => {
+			if (event.target.name === 'Tous') {
+				refreshWorks(true)
+				refreshCategory(true)
+			}
+			// récupération de l'évenement dans la variable filterName //
+			let filterName = event.target.name
+			// Remplacement si évenement de la string "Hôtel & restaurant" par la même string contenu dans le tableau //
+			filterName = filterName.replace(/HotelsEtRestaurants/g, 'Hotels & restaurants')
+			// Vérification que la string de l'évenement est bien présente dans le tableau categoryName et applique la fonction filterDeletAndDisplay //
+			categoryName.includes(filterName)
+				? filterDeletAndDisplay(filterName)
+				: console.error("Le nom du filtre n'existe pas dans la catégorie")
+		})
 	})
-})
+}
 
 //* Fonction qui permet de supprimer la gallery du DOM et de l'afficher de nouveau avec la liste filtrée //
 function filterDeletAndDisplay(filterName) {
-	let works = window.localStorage.getItem('works')
+	let works = JSON.parse(window.localStorage.getItem('works'))
 	if (filterName === 'Tous') {
 		document.querySelector('.gallery').innerHTML = ''
 		galleryGeneration(works)
@@ -163,6 +201,10 @@ function replaceLogInLogOut() {
 	logOut.href = '#'
 	newLi.appendChild(logOut)
 	document.getElementById('logo-instagram').before(newLi)
+	//* Gestion de la déconnexion au clic sur le btn logOut //
+	document.getElementById('logOut').addEventListener('click', () => {
+		resetSession()
+	})
 }
 
 //* Fonction qui permet d'ajouter le btn modifier à coté du titre Mes Projet //
@@ -188,6 +230,10 @@ function addButtonModify() {
 	newDiv.appendChild(subNewDiv)
 	// Ajout de la newDiv dans le DOM //
 	document.querySelector('.filters').before(newDiv)
+	//* Écoute du clic sur le bouton "modifier" //
+	document.getElementById('edit-btn').addEventListener('click', () => {
+		modalCreation('modalElementsDeletWork')
+	})
 }
 
 //* Fonction qui permet de supprimer les filtres si l'utilisateur est connecté //
@@ -197,13 +243,15 @@ function disableFilters() {
 }
 
 //* Récupération de l'id et du token et parse de manière à reconstruire l'objet en JavaScript //
-const token = JSON.parse(window.sessionStorage.getItem('token'))
-// Si le Id et le token sont différent d'une chaine de caractère vide alors //
-if (token.userId !== '' && token.token !== '') {
-	modficationHomePageUserLogIn()
-	//Active la fonction qui permet de vérfier le temps d'inactivité de l'utilisateur //
-	inactivityCheck()
-}
+try {
+	const token = JSON.parse(window.sessionStorage.getItem('token'))
+	// Si le Id et le token sont différent d'une chaine de caractère vide alors //
+	if (token.userId !== '' && token.token !== '') {
+		modficationHomePageUserLogIn()
+		//Active la fonction qui permet de vérfier le temps d'inactivité de l'utilisateur //
+		inactivityCheck()
+	}
+} catch {}
 
 //? GESTION DE LA DÉCONNEXION //
 //* Supprime le token du sessionStorage et réactualise la page  //
@@ -211,10 +259,6 @@ function resetSession() {
 	window.sessionStorage.removeItem('token')
 	location.reload()
 }
-//* Gestion de la déconnexion au clic sur le btn logOut //
-document.getElementById('logOut').addEventListener('click', () => {
-	resetSession()
-})
 
 //? VÉRIFICATION D'INACTIVITÉ //
 let lastActivityTime = Date.now()
@@ -236,9 +280,3 @@ function inactivityCheck() {
 		}
 	}, 10000)
 }
-
-//? GESTION DE LA MODALE //
-//* Écoute du clic sur le bouton "modifier" //
-document.getElementById('edit-btn').addEventListener('click', () => {
-	modalCreation('modalElementsDeletWork')
-})

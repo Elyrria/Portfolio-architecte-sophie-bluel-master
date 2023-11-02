@@ -37,7 +37,6 @@ function emailValidity(logInEmail) {
 	const regex = new RegExp('^[a-z0-9._-]+@[a-z0-9._-]+\\.[a-z]+$')
 	// Si logEmail est faux alors création l'erreur suivante
 	if (!regex.test(logInEmail)) {
-		console.error("L'Email ne respecte pas les critères pour être valide")
 		throw new Error("L'Email ne respecte pas les critères pour être valide")
 	}
 }
@@ -50,7 +49,6 @@ function emailValidity(logInEmail) {
 function passwordValidty(logInPassword) {
 	// Si logInPassword renvoi false alors création l'erreur suivante
 	if (logInPassword.trim() === '') {
-		console.error('Le mot de passe ne peut pas être vide')
 		throw new Error('Le mot de passe ne peut pas être vide')
 	}
 }
@@ -63,17 +61,11 @@ function showErrorMessage(errorMessage) {
 	let spanErrorMessagePassword = document.getElementById('error-message-password-logs')
 	let spanErrorMessageLogs = document.getElementById('error-message-password-logs')
 
-	console.error(errorMessage)
-
 	// La saisie de l'email n'est pas valide
 	errorMessage === "L'Email ne respecte pas les critères pour être valide"
 		? (spanErrorMessageMail.innerText = errorMessage)
 		: (spanErrorMessageMail.innerText = '')
-
-	console.log(spanErrorMessageMail)
-
 	// La saisie du mot de passe n'est pas valide
-
 	if (errorMessage === 'Le mot de passe ne peut pas être vide') {
 		spanErrorMessagePassword.innerText = errorMessage
 	} else {
@@ -95,7 +87,7 @@ async function validationAcces(logInEmail, logInPassword) {
 			password: logInPassword,
 		}
 		//* Fetch pour récupération de l'id et token avec le verbe POST + headers et body
-		const reponse = await fetch('http://localhost:5678/api/users/login', {
+		const response = await fetch('http://localhost:5678/api/users/login', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -105,33 +97,32 @@ async function validationAcces(logInEmail, logInPassword) {
 		})
 
 		// Si la réponse de l'API est strictement égale à 401 alors affiche le message d'erreur suivant :
-		if (reponse.status === 401) {
-			let erroMessage = 'Erreur dans l’identifiant ou le mot de passe'
+		let erroMessage = ''
+		if (response.status === 401) {
+			erroMessage = 'Erreur dans l’identifiant ou le mot de passe'
 			showErrorMessage(erroMessage)
 			console.error('Erreur dans l’identifiant ou le mot de passe')
-			// Sinon si la réponse n'est pas ok, attrape l'erreur
-		} else if (!reponse.ok) {
-			throw new Error(`HTTP ${reponse.status}`)
-		}
-		// Création de la constant qui accueillera la réponse au format JavaScript
-		const accesValidation = await reponse.json()
-		console.log(accesValidation)
-		// Si le token est bien présent alors stock le dans le sessionStorage
-		if (accesValidation.token) {
-			let tokenLogIn = JSON.stringify(accesValidation)
-			window.sessionStorage.setItem('token', tokenLogIn)
-			// Sinon affiche le message d'erreur suivant :
-		} else {
-			console.error("Le serveur n'a pas renvoyé de token d'authification")
+		} else if (!response.ok) {
+			throw new Error(`HTTP ${response.status}`)
+		} else if (response.ok) {
+			// Création de la constant qui accueillera la réponse au format JavaScript
+			let responseData = await response.json()
+			// Si le token est bien présent alors stock le dans le sessionStorage
+			if (responseData.token) {
+				responseData = JSON.stringify(responseData)
+				window.sessionStorage.setItem('token', responseData)
+				// Sinon affiche le message d'erreur suivant :
+				redirectionHomePage()
+			} else {
+				console.error("Le serveur n'a pas renvoyé de token d'authification")
+			}
 		}
 	} catch (error) {
 		console.error("Une erreur s'est produite", error)
 	}
-
-	redirectionHomePage()
 }
 
 //* Function qui redirige vers la page d'accueil
 async function redirectionHomePage() {
-	document.location.href = 'http://127.0.0.1:5501/FrontEnd/index.html'
+	document.location.href = 'http://127.0.0.1:5500/index.html'
 }

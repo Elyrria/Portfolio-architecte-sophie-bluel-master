@@ -19,6 +19,7 @@
 
 .modal-wrapper {
 	max-width: calc(100vw - 30%);
+	min-width: calc(80vw - 30%);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -50,6 +51,7 @@
 	font-weight: 400;
 	color: black;
 	margin-bottom: 100px;
+	padding: 0 10px;
 }
 
 #modal-gallery {

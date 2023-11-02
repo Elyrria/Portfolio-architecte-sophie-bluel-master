@@ -66,21 +66,11 @@ function modalElementsDeletWork() {
 	modalWrapper.appendChild(modalBtn)
 	//* Ajout de l'appel à la fonction qui permet d'ajouter tous les travaux à la modale
 	modalGalleryGeneration()
-	// Écoute d'évement sur chaque poubelle de la galerie
-	const trash = document.querySelectorAll('.fa-trash-can')
-	//Pour chaque élément contenu dans la constante trash ajoute un écouteur d'évenement
-	for (let trashElement of trash) {
-		//! Essayer avec un forEach()
-		trashElement.addEventListener('click', (e) => {
-			e.preventDefault()
-			deletWork(trashElement.dataset.id)
-		})
-	}
 }
 //* Fonction qui permet d'ajouter l'attribut aria-hidden à tous les éléments qui non pas besoin d'être visible quand la modale est ouverte //
 function addAttributAriaHidden() {
 	//Ajout de l'attribut aria-hidden pour qu'il ne reste plus que la modale de visible pour les outils d'accésibilité
-	//! Si je rajoute une class spécifique à tous ces éléments pour ne faire qu'un ligne ?
+	//! Si je rajoute une class spécifique à tous ces éléments pour ne faire qu'une ligne ?
 	document.querySelector('header').setAttribute('aria-hidden', true)
 	document.querySelector('footer').setAttribute('aria-hidden', true)
 	document.querySelector('.edit-mode').setAttribute('aria-hidden', true)
@@ -93,7 +83,7 @@ function addAttributAriaHidden() {
 //* Fonction qui permet de supprimer l'attribut aria-hidden à tous les éléments qui non pas besoin d'être visible quand la modale est ouverte //
 function removeAttributAriaHidden() {
 	//Sippression de l'attribut aria-hidden pour qu'il ne reste plus que la modale de visible pour les outils d'accésibilité
-	//! Si je rajoute une class spécifique à tous ces éléments pour ne faire qu'un ligne ?
+	//! Si je rajoute une class spécifique à tous ces éléments pour ne faire qu'une ligne ?
 	document.querySelector('header').removeAttribute('aria-hidden', true)
 	document.querySelector('footer').removeAttribute('aria-hidden', true)
 	document.querySelector('.edit-mode').removeAttribute('aria-hidden', true)
@@ -104,7 +94,7 @@ function removeAttributAriaHidden() {
 }
 
 //* Fonction qui permet d'importer tous les travaux dans la modale //
-function modalGalleryGeneration() {
+async function modalGalleryGeneration() {
 	const works = JSON.parse(window.localStorage.getItem('works'))
 	const modalGallery = document.getElementById('modal-gallery')
 	modalGallery.innerHTML = ''
@@ -131,16 +121,22 @@ function modalGalleryGeneration() {
 		// Ajout de la balise figure dans la div gallery //
 		modalGallery.appendChild(figureElement)
 	}
+	// Écoute d'évement sur chaque poubelle de la galerie
+	const trash = document.querySelectorAll('.fa-trash-can')
+	//Pour chaque élément contenu dans la constante trash ajoute un écouteur d'évenement
+	for (let i = 0; i < trash.length; i++) {
+		trash[i].addEventListener('click', (e) => {
+			e.preventDefault()
+			deletWork(trash[i].dataset.id)
+		})
+	}
 }
 //* Fonction qui permet de fermer la modale //
 function modalClosure() {
-	document.querySelector('#modal .modal-wrapper .iconsXMarkArrowReturn .fa-xmark').addEventListener(
-		'click',
-		() => {
-			document.getElementById('modal').remove()
-			removeAttributAriaHidden()
-		}
-	)
+	document.querySelector('#modal .fa-xmark').addEventListener('click', () => {
+		document.getElementById('modal').remove()
+		removeAttributAriaHidden()
+	})
 	document.getElementById('modal').addEventListener('click', (e) => {
 		// Permet d'éviter de fermer la modale si on clique dans l'enfant de la cide écoutée
 		if (e.target === e.currentTarget) {
@@ -157,16 +153,22 @@ async function deletWork(trashElement) {
 	const tokenData = JSON.parse(window.sessionStorage.getItem('token'))
 	const token = `Bearer ${tokenData.token}`
 	try {
-		const reponse = await fetch(`http://localhost:5678/api/works/${trashElement}`, {
+		const response = await fetch(`http://localhost:5678/api/works/${trashElement}`, {
 			method: 'DELETE',
 			headers: {
 				accept: '*/*',
 				Authorization: token,
 			},
 		})
-		if (reponse.ok) {
-			refreshWorks(true)
-			modalGalleryGeneration()
+
+		if (!response.ok) {
+			//Gérer l'erreur ici
+			throw new Error(`HTTP ${response.status}`)
+		} else if (response.ok) {
+			await refreshWorks(true)
+			await modalGalleryGeneration() //
 		}
-	} catch (error) {}
+	} catch (error) {
+		console.error("Une erreur s'est produite", error)
+	}
 }
