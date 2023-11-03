@@ -1,8 +1,7 @@
 import { refreshWorks } from './script.js'
 //? CRÉATION DE LA MODALE
 //* Fonction qui permet de créer la modale
-export function modalCreation(elementModal) {
-	let modalDisplay = elementModal
+export function creationModal() {
 	//Création de l'aside qui contiendra la modale
 	const modalContaineur = document.createElement('aside')
 	modalContaineur.id = 'modal'
@@ -13,10 +12,20 @@ export function modalCreation(elementModal) {
 	//Création du modalWrapper
 	const modalWrapper = document.createElement('div')
 	modalWrapper.classList.add('modal-wrapper')
+	//Ajout de modalWrapper dans le conaineurModal //
+	modalContaineur.appendChild(modalWrapper)
+	document.querySelector('.gallery').before(modalContaineur)
+
+	deletModalElement()
+	addAriaHidden()
+	creationSnackBar()
+}
+//* Fonction qui permet de créer une div dans la modale avec une flèche et une croix
+function creatModalDivXMarkAndArrow() {
 	//Création d'une div qui contiendra la xMark //
 	const moadalDivXMark = document.createElement('div')
 	moadalDivXMark.classList.add('iconsXMarkArrowReturn')
-	//Création de la flèche de retour de la modale ajout travau //
+	//Création de la flèche de retour de la modale ajout élément //
 	const modalArrowReturn = document.createElement('i')
 	modalArrowReturn.classList.add('fa-solid', 'fa-arrow-left')
 	modalArrowReturn.setAttribute('aria-hidden', 'true')
@@ -28,48 +37,25 @@ export function modalCreation(elementModal) {
 	moadalDivXMark.appendChild(modalArrowReturn)
 	moadalDivXMark.appendChild(modalXMark)
 	//Ajout de la div qui contient la croix de fermture dans le modalWrapper //
-	modalWrapper.appendChild(moadalDivXMark)
-	//Ajout de modalWrapper dans le conaineurModal //
-	modalContaineur.appendChild(modalWrapper)
-	document.querySelector('.gallery').before(modalContaineur)
-
-	if (modalDisplay === 'modalElementsDeletWork') {
-		modalElementsDeletWork()
-	}
-	// elementModal === 'elementModal1' ? modalElements1() : modalElements2() /
-	addAttributAriaHidden()
-	modalClosure()
-	creationSnackBar()
+	document.getElementById('title-modal').before(moadalDivXMark)
 }
 
-//* Fonction qui permet de créer le contenu de la modale pour supprimer des travaux //
-function modalElementsDeletWork() {
-	// Création du titre pour la modale de suppresion des travaux
-	const modalH2 = document.createElement('h2')
-	//* Id permet de lier le titre à l'attribut aria-labelleby de la modale pour la liseuse
-	modalH2.id = 'title-modal'
-	modalH2.innerText = 'Galerie photo'
-	// Création d'une div modal-gallery qui contiendra la gallerie en CSS-grid
-	const modalGalleryContaineur = document.createElement('div')
-	modalGalleryContaineur.id = 'modal-gallery'
-	//Création d'un <hr> pour la séparation de la partie gallery et du bouton
-	const modalHr = document.createElement('hr')
-	// Création d'un bouton pour passer à la modale d'ajout d'un travau
-	const modalBtn = document.createElement('button')
-	modalBtn.classList.add('button')
-	modalBtn.innerText = 'Ajouter une photo'
-	// récupération de l'élément du DOM modal-wrapper
-	const modalWrapper = document.querySelector('.modal-wrapper')
-	//Ajout à cet élément les enfants ci-dessous
-	modalWrapper.appendChild(modalH2)
-	modalWrapper.appendChild(modalGalleryContaineur)
-	modalWrapper.appendChild(modalHr)
-	modalWrapper.appendChild(modalBtn)
-	//* Ajout de l'appel à la fonction qui permet d'ajouter tous les travaux à la modale
-	modalGalleryGeneration()
+//* Fonction qui permet de fermer la modale //
+function closeModal() {
+	document.querySelector('#modal .fa-xmark').addEventListener('click', () => {
+		document.getElementById('modal').remove()
+		removeAriaHidden()
+	})
+	document.getElementById('modal').addEventListener('click', (e) => {
+		// Permet d'éviter de fermer la modale si on clique dans l'enfant de la cide écoutée
+		if (e.target === e.currentTarget) {
+			document.getElementById('modal').remove()
+			removeAriaHidden()
+		}
+	})
 }
 //* Fonction qui permet d'ajouter l'attribut aria-hidden à tous les éléments qui non pas besoin d'être visible quand la modale est ouverte //
-function addAttributAriaHidden() {
+function addAriaHidden() {
 	//Ajout de l'attribut aria-hidden pour qu'il ne reste plus que la modale de visible pour les outils d'accésibilité
 	//! Si je rajoute une class spécifique à tous ces éléments pour ne faire qu'une ligne ?
 	document.querySelector('header').setAttribute('aria-hidden', true)
@@ -82,7 +68,7 @@ function addAttributAriaHidden() {
 }
 
 //* Fonction qui permet de supprimer l'attribut aria-hidden à tous les éléments qui non pas besoin d'être visible quand la modale est ouverte //
-function removeAttributAriaHidden() {
+function removeAriaHidden() {
 	//Sippression de l'attribut aria-hidden pour qu'il ne reste plus que la modale de visible pour les outils d'accésibilité
 	//! Si je rajoute une class spécifique à tous ces éléments pour ne faire qu'une ligne ?
 	document.querySelector('header').removeAttribute('aria-hidden', true)
@@ -93,9 +79,61 @@ function removeAttributAriaHidden() {
 	document.getElementById('user-modifications').removeAttribute('aria-hidden', true)
 	document.querySelector('.gallery').removeAttribute('aria-hidden', true)
 }
+//* Fonction qui permet de vider le containeur de la modale pour basculer d'une modale à l'autre //
+function deleteModalContent() {
+	const modalWrapper = document.querySelector('.modal-wrapper')
+	modalWrapper.innerHTML = ''
+}
 
-//* Fonction qui permet d'importer tous les travaux dans la modale //
-async function modalGalleryGeneration() {
+function listenModalEvents() {
+	const buttonAddPicture = document.querySelector('.modal-wrapper .add-picture')
+	if (buttonAddPicture !== null) {
+		buttonAddPicture.addEventListener('click', () => {
+			deleteModalContent()
+			addModalElement()
+		})
+	}
+	const leftReturnArrow = document.querySelector('.show')
+	if (leftReturnArrow !== null) {
+		leftReturnArrow.addEventListener('click', () => {
+			deleteModalContent()
+			deletModalElement()
+		})
+	}
+}
+
+//* Fonction qui permet de créer le contenu de la modale pour supprimer des projets //
+function deletModalElement() {
+	// Création du titre pour la modale de suppresion des travaux
+	const modalH2 = document.createElement('h2')
+	//* Id permet de lier le titre à l'attribut aria-labelleby de la modale pour la liseuse
+	modalH2.id = 'title-modal'
+	modalH2.innerText = 'Galerie photo'
+	// Création d'une div modal-gallery qui contiendra la gallerie en CSS-grid
+	const modalGalleryContaineur = document.createElement('div')
+	modalGalleryContaineur.id = 'modal-gallery'
+	//Création d'un <hr> pour la séparation de la partie gallery et du bouton
+	const modalHr = document.createElement('hr')
+	// Création d'un bouton pour passer à la modale d'ajout d'un travau
+	const modalBtn = document.createElement('button')
+	modalBtn.classList.add('button', 'add-picture')
+	modalBtn.innerText = 'Ajouter une photo'
+	// récupération de l'élément du DOM modal-wrapper
+	const modalWrapper = document.querySelector('.modal-wrapper')
+	//Ajout à cet élément les enfants ci-dessous
+	modalWrapper.appendChild(modalH2)
+	modalWrapper.appendChild(modalGalleryContaineur)
+	modalWrapper.appendChild(modalHr)
+	modalWrapper.appendChild(modalBtn)
+	creatModalDivXMarkAndArrow()
+	//* Ajout de l'appel à la fonction qui permet d'ajouter tous les travaux à la modale //
+	createModalGallery()
+	//* Ajout de l'appel à la fonction qui permet d'écouter le click sur le bouton Ajouter une photo //
+	listenModalEvents()
+	closeModal()
+}
+//* Fonction qui permet d'afficher chaque projet la modale //
+async function createModalGallery() {
 	const works = JSON.parse(window.localStorage.getItem('works'))
 	const modalGallery = document.getElementById('modal-gallery')
 	modalGallery.innerHTML = ''
@@ -129,29 +167,13 @@ async function modalGalleryGeneration() {
 	for (let i = 0; i < trash.length; i++) {
 		trash[i].addEventListener('click', (e) => {
 			e.preventDefault()
-			deletWork(trash[i].dataset.id)
+			deletElement(trash[i].dataset.id)
 		})
 	}
 }
-//* Fonction qui permet de fermer la modale //
-function modalClosure() {
-	document.querySelector('#modal .fa-xmark').addEventListener('click', () => {
-		document.getElementById('modal').remove()
-		removeAttributAriaHidden()
-	})
-	document.getElementById('modal').addEventListener('click', (e) => {
-		// Permet d'éviter de fermer la modale si on clique dans l'enfant de la cide écoutée
-		if (e.target === e.currentTarget) {
-			document.getElementById('modal').remove()
-			removeAttributAriaHidden()
-		}
-	})
-}
-/**
- ** Fonction qui permet de supprimer un travail //
- *  @param {number} trashElement
- */
-async function deletWork(trashElement) {
+//*Fonction qui permet de supprimer un travail //
+//@param {number} trashElement
+async function deletElement(trashElement) {
 	const tokenData = JSON.parse(window.sessionStorage.getItem('token'))
 	const token = `Bearer ${tokenData.token}`
 	try {
@@ -167,12 +189,129 @@ async function deletWork(trashElement) {
 			throw new Error(`HTTP ${response.status}`)
 		} else if (response.ok) {
 			await refreshWorks(true)
-			await modalGalleryGeneration() //
+			await createModalGallery() //
 			showMessageSnackbBar('Élément supprimé')
 		}
 	} catch (error) {
 		console.error("Une erreur s'est produite", error)
 	}
+}
+//* Fonction qui permet de créer le contenu de la modale pour ajouter des projets //
+function addModalElement() {
+	const modalH2 = document.createElement('h2')
+	//* Id permet de lier le titre à l'attribut aria-labelleby de la modale pour la liseuse //
+	modalH2.id = 'title-modal'
+	modalH2.innerText = 'Ajout photo'
+	//Création d'un <hr> pour la séparation du formulaire et du bouton //
+	const modalHr = document.createElement('hr')
+	// Création d'un bouton pour valider l'envoi d'un fichier //
+	const modalBtn = document.createElement('button')
+	modalBtn.classList.add('button')
+	modalBtn.innerText = 'Valider'
+	// Récupération de l'élément du DOM modal-wrapper //
+	const modalWrapper = document.querySelector('.modal-wrapper')
+	// Ajout à cet élément les enfants ci-dessous //
+	modalWrapper.appendChild(modalH2)
+	modalWrapper.appendChild(modalHr)
+	modalWrapper.appendChild(modalBtn)
+	// Appel de la fonction qui va permetre de créer le formulaire //
+	createFormAddElement()
+	// Appel de la fonction qui va créer la div contenant la flèche de retour et la croix de fermeture //
+	creatModalDivXMarkAndArrow()
+	// Affichage de la flèche de retour qui était en visibilty : hidden //
+	const leftArrow = document.querySelector('.fa-arrow-left')
+	leftArrow.classList.add('show')
+	// Fonction qui va permettre d'écouter la flèche de retour //
+	listenModalEvents()
+	// Fonction qui permet de fermer la modale avec un click sur la croix ou en dehors de la modale //
+	closeModal()
+}
+//* Fonction qui permet de créer le formulaire dans la mmodale pour ajouter un projet //
+function createFormAddElement() {
+	const modalForm = document.createElement('form')
+	modalForm.classList.add('form-style')
+	modalForm.id = 'modal-form'
+	modalForm.action = '#'
+	modalForm.method = 'post'
+
+	document.querySelector('.modal-wrapper hr').before(modalForm)
+
+	creatInputAddPictureElement()
+	creatInputTitleElement()
+	//Récupération du localStorage des catégories
+	const categories = JSON.parse(window.localStorage.getItem('categories'))
+	creatSelectcategoriesElement(categories)
+	creatContaineurSelectAndListOption(categories)
+}
+
+function creatInputAddPictureElement() {
+	const inputImg = document.createElement('input')
+	const modalForm = document.getElementById('modal-form')
+	modalForm.appendChild(inputImg)
+}
+
+function creatInputTitleElement() {
+	const labelInputTitle = document.createElement('label')
+	labelInputTitle.innerText = 'Titre'
+	labelInputTitle.classList.add('label-style')
+	labelInputTitle.for = 'title'
+	const inputTitle = document.createElement('input')
+	inputTitle.classList.add('input-style')
+	inputTitle.setAttribute('type', 'text')
+	inputTitle.id = 'title'
+	inputTitle.name = 'title'
+	inputTitle.setAttribute('requierd', '')
+
+	const modalForm = document.getElementById('modal-form')
+	modalForm.appendChild(labelInputTitle)
+	modalForm.appendChild(inputTitle)
+}
+
+function creatSelectcategoriesElement(categories) {
+	const labelSelectCategories = document.createElement('label')
+	labelSelectCategories.innerText = 'Catégorie'
+	labelSelectCategories.classList.add('label-style')
+	labelSelectCategories.for = 'categories'
+	const selectCategories = document.createElement('select')
+	selectCategories.classList.add('input-style')
+	selectCategories.id = 'categories'
+	selectCategories.name = 'categories'
+	selectCategories.setAttribute('requierd', '')
+
+	for (let category of categories) {
+		const selectOption = document.createElement('option')
+		const valueOption = category.name.replace(/ /g, '').replace(/&r/g, 'EtR')
+		const textOption = category.name.replace(/Ho/g, 'Hô')
+		selectOption.value = valueOption
+		selectOption.innerText = textOption
+		selectCategories.appendChild(selectOption)
+	}
+
+	const modalForm = document.getElementById('modal-form')
+	modalForm.appendChild(labelSelectCategories)
+	modalForm.appendChild(selectCategories)
+}
+
+function creatContaineurSelectAndListOption(categories) {
+	const containeurSelect = document.createElement('div')
+	containeurSelect.classList.add('custom-select')
+	const options = document.createElement('ul')
+	options.classList.add('options')
+
+	for (let i = 0; i < categories.length; i++) {
+		const li = document.createElement('li')
+		li.setAttribute('data-value', `${categories[i].name}`)
+		li.innerText = `${categories[i].name}`
+		console.log(li)
+		options.appendChild(li)
+	}
+	
+	// Récupération de la balise Select pour l'introduire dans la div custom-select //
+	const realSelect = document.getElementById('categories')
+	containeurSelect.appendChild(options)
+	containeurSelect.appendChild(realSelect)
+	document.getElementById('modal-form').appendChild(containeurSelect)
+
 }
 
 // Fonction qui permet de créer la snack barre lorsque la modale est présente
@@ -186,7 +325,7 @@ function creationSnackBar() {
 }
 // Fonction qui permet d'afficher un message lorsque un élément est supprié ou rajouté
 //? Paramètre type string : le message à afficher (suppression ou ajout)
- function showMessageSnackbBar(message) {
+function showMessageSnackbBar(message) {
 	const divSnackBar = document.getElementById('snackbar')
 	divSnackBar.innerText = `${message}`
 	divSnackBar.classList.add('show')

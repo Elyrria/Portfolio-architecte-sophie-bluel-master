@@ -1,5 +1,5 @@
 //? Import des fonction nécessaire pour modifier la modale//
-import { modalCreation } from './modale.js'
+import { creationModal } from './modale.js'
 
 //? RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES TRAVAUX //
 export async function refreshWorks(forceFlag) {
@@ -30,7 +30,6 @@ export async function refreshWorks(forceFlag) {
 			works = JSON.parse(works)
 			galleryGeneration(works)
 		}
-		console.log(works)
 	} catch (error) {
 		console.error("Une erreur s'est produite", error)
 	}
@@ -38,7 +37,7 @@ export async function refreshWorks(forceFlag) {
 
 refreshWorks(false)
 genrationContaineurFilter()
-refreshCategory(false)
+refreshCategories(false)
 
 //* GÉNÉRATION DES TRAVAUX SUR LA PAGE D'ACCUEIL //
 function galleryGeneration(works) {
@@ -65,11 +64,11 @@ function galleryGeneration(works) {
 
 //? RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES CATÉGORIE //
 //* Récupération des catégories sur le localStorage //
-async function refreshCategory(forceFlag) {
-	let category = window.localStorage.getItem('category')
+async function refreshCategories(forceFlag) {
+	let categories = window.localStorage.getItem('categories')
 	//* Si pas présent récupération via l'API et stockage dans le localStorage //
 	try {
-		if (forceFlag || category === null) {
+		if (forceFlag || categories === null) {
 			// Récupération via l'API Swagger //
 			const response = await fetch('http://localhost:5678/api/categories', {
 				accept: 'application/json',
@@ -85,13 +84,13 @@ async function refreshCategory(forceFlag) {
 				listenFilter(responseData)
 				// Stockage dans le localStorag //
 				responseData = JSON.stringify(responseData)
-				window.localStorage.setItem('category', responseData)
+				window.localStorage.setItem('categories', responseData)
 			}
 		} else {
-			// Sinon parse.category //
-			category = JSON.parse(category)
-			creatingFilter(category)
-			listenFilter(category)
+			// Sinon parse.categories //
+			categories = JSON.parse(categories)
+			creatingFilter(categories)
+			listenFilter(categories)
 		}
 		//Si tous est okay appel de la fonction listenFilter()
 	} catch (error) {
@@ -106,58 +105,68 @@ function genrationContaineurFilter() {
 }
 
 //? CRÉATION DES FILTRES //
-function creatingFilter(category) {
+function creatingFilter(categories) {
 	const divElement = document.querySelector('.filters')
 	divElement.innerHTML = ''
 	// * Création du filtre Tous //
 	const filterBtnTous = document.createElement('button')
 	filterBtnTous.innerText = 'Tous'
-	filterBtnTous.name = 'Tous'
+	filterBtnTous.name = 'tous'
 	divElement.appendChild(filterBtnTous)
-	//* Boucle qui permet d'ajouter autant de bouton filtre qu'il a de catégorie dans le tableau category //
-	for (let i = 0; i < category.length; i++) {
+	//* Boucle qui permet d'ajouter autant de bouton filtre qu'il a de catégorie dans le tableau categories //
+	for (let i = 0; i < categories.length; i++) {
 		const filtersBtn = document.createElement('button')
-		const item = category[i]
+		const item = categories[i]
 		// .replace permet de modifier Hotel par Hôtel //
 		//! Attention si beaucoup d'éléments dans catégorie //
 		filtersBtn.innerText = item.name.replace(/Ho/g, 'Hô')
 		// .replace permet de rechercher une string entre les deux slashs et le g exécute la recherche le deuxième argument remplace la string si trouvée //
-		filtersBtn.name = `${item.name.replace(/ /g, '').replace(/&r/g, 'EtR')}`
+		filtersBtn.name = `${item.name.replace(/ /g, '').replace(/&r/g, '-et-r').toLowerCase()}`
 		// Ajout du bouton[i] dans la divElement //
 		divElement.appendChild(filtersBtn)
 	}
 }
 
-function listenFilter(category) {
-	//* Récupération des noms de chaque catégories et stockage dans la const categoryName //
-	const categoryName = category.map((name) => name.name)
+function listenFilter(categories) {
+	//* Récupération des noms de chaque catégories et stockage dans la const categoriesName //
+	const categoriesName = categories.map((name) => name.name)
+	console.log(categoriesName)
 	// Ajout au tableau la string Tous //
-	categoryName.push('Tous')
+	categoriesName.push('tous')
 	//* Écoute de chaque button filters //
 	const filtersBtns = document.querySelectorAll('.filters button')
 	// Écoute de l'ensemble des boutons filtre //
 	filtersBtns.forEach((button) => {
 		button.addEventListener('click', (event) => {
-			if (event.target.name === 'Tous') {
+			if (event.target.name === 'tous') {
 				refreshWorks(true)
-				refreshCategory(true)
+				refreshCategories(true)
 			}
-			// récupération de l'évenement dans la variable filterName //
-			let filterName = event.target.name
+			// récupération de l'évenement dans la variable filterName et remplace la première lettre du mot en Majusculte//
+			let filterName = capitalizeFirstLetter(event.target.name)
 			// Remplacement si évenement de la string "Hôtel & restaurant" par la même string contenu dans le tableau //
-			filterName = filterName.replace(/HotelsEtRestaurants/g, 'Hotels & restaurants')
-			// Vérification que la string de l'évenement est bien présente dans le tableau categoryName et applique la fonction filterDeletAndDisplay //
-			categoryName.includes(filterName)
+			filterName = filterName.replace(/Hotels-et-restaurants/g, 'Hotels & restaurants')
+			// Vérification que la string de l'évenement est bien présente dans le tableau categoriesName et applique la fonction filterDeletAndDisplay //
+			categoriesName.includes(filterName)
 				? filterDeletAndDisplay(filterName)
 				: console.error("Le nom du filtre n'existe pas dans la catégorie")
 		})
 	})
 }
 
+function capitalizeFirstLetter(word) {
+	// Vérification que la chaîne n'est pas vide
+	if (word.length === 0) return word
+	// Première lettre en majuscule et le reste en minuscules
+	const firstLetterCapital = word.charAt(0).toUpperCase()
+	const RestOfWordLowercase = word.slice(1).toLowerCase()
+	return firstLetterCapital + RestOfWordLowercase
+}
+
 //* Fonction qui permet de supprimer la gallery du DOM et de l'afficher de nouveau avec la liste filtrée //
 function filterDeletAndDisplay(filterName) {
 	let works = JSON.parse(window.localStorage.getItem('works'))
-	if (filterName === 'Tous') {
+	if (filterName === 'tous') {
 		document.querySelector('.gallery').innerHTML = ''
 		galleryGeneration(works)
 	} else {
@@ -234,7 +243,7 @@ function addButtonModify() {
 	document.querySelector('.filters').before(newDiv)
 	//* Écoute du clic sur le bouton "modifier" //
 	document.getElementById('edit-btn').addEventListener('click', () => {
-		modalCreation('modalElementsDeletWork')
+		creationModal()
 	})
 }
 

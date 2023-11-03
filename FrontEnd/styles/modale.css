@@ -44,6 +44,10 @@
 	visibility: hidden;
 }
 
+#modal .show {
+	visibility: visible;
+}
+
 .modal-wrapper h2 {
 	text-align: center;
 	font-family: 'Work Sans';
@@ -104,6 +108,13 @@
 	margin: 0 0 40px 0;
 	font-size: 0.7rem;
 }
+
+#modal-form {
+	margin: 0 0 30px 0;
+	width: 75%;
+}
+
+
 
 /* The snackbar - position it at the bottom and in the middle of the screen */
 #snackbar {
