@@ -39,6 +39,7 @@ export function modalCreation(elementModal) {
 	// elementModal === 'elementModal1' ? modalElements1() : modalElements2() /
 	addAttributAriaHidden()
 	modalClosure()
+	creationSnackBar()
 }
 
 //* Fonction qui permet de créer le contenu de la modale pour supprimer des travaux //
@@ -105,6 +106,7 @@ async function modalGalleryGeneration() {
 		// Création de la balise img //
 		const imgElement = document.createElement('img')
 		imgElement.src = item.imageUrl
+		imgElement.alt = `Photographie de Sophie Bluel : ${item.title}`
 		// Création de la div qui va contenir l'icone poubelle //
 		const divTrashIcon = document.createElement('div')
 		divTrashIcon.classList.add('trash-icon')
@@ -160,15 +162,35 @@ async function deletWork(trashElement) {
 				Authorization: token,
 			},
 		})
-
 		if (!response.ok) {
 			//Gérer l'erreur ici
 			throw new Error(`HTTP ${response.status}`)
 		} else if (response.ok) {
 			await refreshWorks(true)
 			await modalGalleryGeneration() //
+			showMessageSnackbBar('Élément supprimé')
 		}
 	} catch (error) {
 		console.error("Une erreur s'est produite", error)
 	}
+}
+
+// Fonction qui permet de créer la snack barre lorsque la modale est présente
+function creationSnackBar() {
+	const divSnackBar = document.getElementById('snackbar')
+	if (divSnackBar === null) {
+		const elementSnackBar = document.createElement('div')
+		elementSnackBar.id = 'snackbar'
+		document.querySelector('body').appendChild(elementSnackBar)
+	}
+}
+// Fonction qui permet d'afficher un message lorsque un élément est supprié ou rajouté
+//? Paramètre type string : le message à afficher (suppression ou ajout)
+ function showMessageSnackbBar(message) {
+	const divSnackBar = document.getElementById('snackbar')
+	divSnackBar.innerText = `${message}`
+	divSnackBar.classList.add('show')
+	setTimeout(() => {
+		divSnackBar.classList.remove('show')
+	}, 2000)
 }

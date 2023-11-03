@@ -30,6 +30,7 @@ export async function refreshWorks(forceFlag) {
 			works = JSON.parse(works)
 			galleryGeneration(works)
 		}
+		console.log(works)
 	} catch (error) {
 		console.error("Une erreur s'est produite", error)
 	}
@@ -50,6 +51,7 @@ function galleryGeneration(works) {
 		//Création de la balise img //
 		const imgElement = document.createElement('img')
 		imgElement.src = item.imageUrl
+		imgElement.alt = `Photographie de Sophie Bluel : ${item.title}`
 		//Création de la balise figcaptation //
 		const figCaptationElement = document.createElement('figcaptation')
 		figCaptationElement.innerText = item.title
