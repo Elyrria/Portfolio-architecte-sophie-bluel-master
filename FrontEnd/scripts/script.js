@@ -130,7 +130,6 @@ function creatingFilter(categories) {
 function listenFilter(categories) {
 	//* Récupération des noms de chaque catégories et stockage dans la const categoriesName //
 	const categoriesName = categories.map((name) => name.name)
-	console.log(categoriesName)
 	// Ajout au tableau la string Tous //
 	categoriesName.push('tous')
 	//* Écoute de chaque button filters //

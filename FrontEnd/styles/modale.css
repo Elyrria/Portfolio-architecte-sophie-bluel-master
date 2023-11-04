@@ -4,7 +4,7 @@
 	--second-color: #1d6154;
 	--background-color: #fffef8;
 }
-
+/* Régles CSS générales pour la modale */
 #modal {
 	position: fixed;
 	display: flex;
@@ -18,8 +18,9 @@
 }
 
 .modal-wrapper {
-	max-width: calc(100vw - 30%);
-	min-width: calc(80vw - 30%);
+	max-width: calc(100vw - 55%);
+	min-width: 450px;
+	max-height: calc(90vh);
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -27,6 +28,7 @@
 	border-radius: 10px;
 }
 
+/* Régles CSS des icones croix et flèches retour */
 .modal-wrapper .iconsXMarkArrowReturn {
 	display: flex;
 	width: 100%;
@@ -43,7 +45,7 @@
 .fa-arrow-left {
 	visibility: hidden;
 }
-
+/* Affichage de la flèche retour arrière lors de l'ajout de la classe show */
 #modal .show {
 	visibility: visible;
 }
@@ -58,6 +60,7 @@
 	padding: 0 10px;
 }
 
+/* Régles CSS de la galerie */
 #modal-gallery {
 	width: 75%;
 	display: grid;
@@ -76,6 +79,7 @@
 	width: 100%;
 }
 
+/* Règles CSS pour l'icone poubelle  */
 #modal-gallery .trash-icon {
 	position: absolute;
 	display: flex;
@@ -95,12 +99,14 @@
 	font-size: 80%;
 }
 
+/* Règles CSS pour le hr */
 .modal-wrapper hr {
 	border: 1px solid var(--main-color-text);
 	width: 75%;
 	padding-left: 50px;
 	margin: 0 0 35px 0;
 }
+
 /* Modification de la marge du btn  */
 .modal-wrapper .button {
 	width: 45%;
@@ -109,13 +115,81 @@
 	font-size: 0.7rem;
 }
 
+/* Règles CSS pour le formulaire de la modale ajouter un projet */
+
 #modal-form {
 	margin: 0 0 30px 0;
 	width: 75%;
 }
 
+.input-image {
+	height: 200px;
+	background-color: #e8f1f6;
+	border: none;
+}
+#modal-form #title {
+	color: #444444;
+	padding-left: 25px;
+}
 
+.custom-select {
+	position: relative;
+	display: inline-block;
+	border: none;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+	cursor: pointer;
+}
 
+.selected-option {
+	display: block;
+	position: absolute;
+	color: #444444;
+	height: 53px;
+	z-index: 2;
+	background-color: white;
+	padding-left: 25px;
+	width: 100%;
+	line-height: 53px;
+}
+
+.options {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+	border-top: none;
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	background-color: #fff;
+	z-index: 1;
+	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
+}
+
+.options li {
+	display: flex;
+	align-items: center;
+	padding: 25px;
+	height: 50px;
+	cursor: pointer;
+}
+
+.options li:hover {
+	background-color: #f2f2f2;
+}
+
+.selected-option .fa-chevron-down {
+	position: absolute;
+	top: 20px;
+	right: 25px ;
+}
+.selected-option .fa-bars{
+	position: absolute;
+	top: 20px;
+	right: 25px;
+}
+/* Règles CSS pour la snackBarre (suppression et ajout d'un projet) */
 /* The snackbar - position it at the bottom and in the middle of the screen */
 #snackbar {
 	visibility: hidden; /* Hidden by default. Visible on click */
@@ -186,9 +260,11 @@
 	}
 }
 
+/* Régles CSS pour les différentes dimensions d'écran  ***MédiasQuerry***  */
+
 @media screen and (min-width: 1140px) {
 	.modal-wrapper h2 {
-		font-size: 2.6rem;
+		font-size: 2rem;
 	}
 	#modal-gallery .trash-icon {
 		width: 30px;

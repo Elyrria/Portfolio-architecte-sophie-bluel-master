@@ -240,16 +240,20 @@ function createFormAddElement() {
 	creatInputTitleElement()
 	//Récupération du localStorage des catégories
 	const categories = JSON.parse(window.localStorage.getItem('categories'))
-	creatSelectcategoriesElement(categories)
+	creatSelectCategoriesElement(categories)
 	creatContaineurSelectAndListOption(categories)
+	manageSelectInteraction()
 }
 
+// * Fonction qui permet de créer l'input pour ajouter une photos au nouveau projet //
 function creatInputAddPictureElement() {
 	const inputImg = document.createElement('input')
+	inputImg.classList.add('input-image')
 	const modalForm = document.getElementById('modal-form')
 	modalForm.appendChild(inputImg)
 }
 
+// * Fonction qui permet de créer l'input pour ajouter un titre au nouveau projet //
 function creatInputTitleElement() {
 	const labelInputTitle = document.createElement('label')
 	labelInputTitle.innerText = 'Titre'
@@ -267,7 +271,9 @@ function creatInputTitleElement() {
 	modalForm.appendChild(inputTitle)
 }
 
-function creatSelectcategoriesElement(categories) {
+// * Fonction qui permet de créer le select pour choisir une des catégories pour le  nouveau projet //
+//? Paramètre [array] type string
+function creatSelectCategoriesElement(categories) {
 	const labelSelectCategories = document.createElement('label')
 	labelSelectCategories.innerText = 'Catégorie'
 	labelSelectCategories.classList.add('label-style')
@@ -277,10 +283,11 @@ function creatSelectcategoriesElement(categories) {
 	selectCategories.id = 'categories'
 	selectCategories.name = 'categories'
 	selectCategories.setAttribute('requierd', '')
-
+	// Création des options pour chaque catégorie du tableau categories
 	for (let category of categories) {
 		const selectOption = document.createElement('option')
-		const valueOption = category.name.replace(/ /g, '').replace(/&r/g, 'EtR')
+		const valueOption = category.name
+		// const valueOption = category.name.replace(/ /g, '').replace(/&r/g, 'EtR')
 		const textOption = category.name.replace(/Ho/g, 'Hô')
 		selectOption.value = valueOption
 		selectOption.innerText = textOption
@@ -291,30 +298,79 @@ function creatSelectcategoriesElement(categories) {
 	modalForm.appendChild(labelSelectCategories)
 	modalForm.appendChild(selectCategories)
 }
-
+//* Fonction qui permet de créer la fausse liste de séléction
+//? Paramètre [array] type string
 function creatContaineurSelectAndListOption(categories) {
 	const containeurSelect = document.createElement('div')
 	containeurSelect.classList.add('custom-select')
-	const options = document.createElement('ul')
-	options.classList.add('options')
+	const spanSelectOption = document.createElement('span')
+	spanSelectOption.classList.add('selected-option')
+	const ulOptions = document.createElement('ul')
+	ulOptions.classList.add('options')
 
 	for (let i = 0; i < categories.length; i++) {
 		const li = document.createElement('li')
 		li.setAttribute('data-value', `${categories[i].name}`)
 		li.innerText = `${categories[i].name}`
-		console.log(li)
-		options.appendChild(li)
+		ulOptions.appendChild(li)
 	}
-	
+
 	// Récupération de la balise Select pour l'introduire dans la div custom-select //
 	const realSelect = document.getElementById('categories')
-	containeurSelect.appendChild(options)
+	// spanSelectOption.appendChild(chevronDown)
+	containeurSelect.appendChild(spanSelectOption)
+	containeurSelect.appendChild(ulOptions)
 	containeurSelect.appendChild(realSelect)
 	document.getElementById('modal-form').appendChild(containeurSelect)
+}
+//* Fonction qui gére l'affichage du faux select et qui modifie la value du vrai select //
+//! Voir pour raccourcir la fonction
+function manageSelectInteraction() {
+	//Sécléction des différents éléments nécessaires pour gérer l'affichage //
+	const modalForm = document.getElementById('modal-form')
+	const customSelect = document.querySelector('.custom-select')
+	const selectedOption = customSelect.querySelector('.selected-option')
+	const optionList = customSelect.querySelector('.options')
+	const realSelect = customSelect.querySelector('#categories')
+	// Création de l'icone chevron vers le bas //
+	const chevronDown = document.createElement('i')
+	chevronDown.classList.add('fa-solid', 'fa-chevron-down')
+	selectedOption.appendChild(chevronDown)
+	// Création de l'icone trois barres //
+	const barsOpen = document.createElement('i')
+	barsOpen.classList.add('fa-solid', 'fa-bars')
 
+	selectedOption.addEventListener('click', () => {
+		optionList.style.display = optionList.style.display === 'block' ? 'none' : 'block'
+		chevronDown.style.visibility = 'hidden'
+		modalForm.style.marginBottom = '180px'
+		selectedOption.appendChild(barsOpen)
+		barsOpen.style.visibility = 'visible'
+	})
+	optionList.addEventListener('click', (event) => {
+		if (event.target && event.target.tagName === 'LI') {
+			selectedOption.textContent = event.target.textContent
+			// Ajout de l'icone avec leur valeur car il est supprimé
+			selectedOption.appendChild(chevronDown)
+			realSelect.value = event.target.getAttribute('data-value')
+			optionList.style.display = 'none'
+			modalForm.style.marginBottom = '30px'
+			chevronDown.style.visibility = 'visible'
+			barsOpen.style.visibility = 'hidden'
+		}
+	})
+
+	document.addEventListener('click', (event) => {
+		if (event.target !== selectedOption) {
+			optionList.style.display = 'none'
+			modalForm.style.marginBottom = '30px'
+			chevronDown.style.visibility = 'visible'
+			barsOpen.style.visibility = 'hidden'
+		}
+	})
 }
 
-// Fonction qui permet de créer la snack barre lorsque la modale est présente
+//* Fonction qui permet de créer la snack barre lorsque la modale est présente
 function creationSnackBar() {
 	const divSnackBar = document.getElementById('snackbar')
 	if (divSnackBar === null) {
