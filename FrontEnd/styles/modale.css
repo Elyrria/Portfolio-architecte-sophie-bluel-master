@@ -18,9 +18,9 @@
 }
 
 .modal-wrapper {
-	max-width: calc(100vw - 55%);
-	min-width: 450px;
-	max-height: calc(90vh);
+	max-width: 45vw;
+	width: 100%;
+	max-height: 100vh;
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -122,10 +122,62 @@
 	width: 75%;
 }
 
-.input-image {
-	height: 200px;
+.containeur-input-files {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 20vh;
 	background-color: #e8f1f6;
 	border: none;
+}
+
+.containeur-label-input {
+	width: 100%;
+	/* display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center; */
+}
+
+.fa-image {
+	font-size: 45px;
+	color: #b9c5cc;
+}
+
+.label-input-file {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	width: 100%;
+	cursor: pointer;
+	gap: 8px;
+}
+
+.span-input-file-text {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 60%;
+	height: 30px;
+	font-size: 0.9rem;
+	color: #306685;
+	background-color: #cbd6dc;
+	border-radius: 50px;
+}
+
+.span-input-file-size {
+	font-size: 0.6rem;
+	color: #444444;
+}
+
+#input-file {
+	display: none;
+}
+#preview-image {
+	display: none;
+	height: 100%;
+	object-fit: cover;
 }
 #modal-form #title {
 	color: #444444;
@@ -182,13 +234,32 @@
 .selected-option .fa-chevron-down {
 	position: absolute;
 	top: 20px;
-	right: 25px ;
+	right: 25px;
 }
-.selected-option .fa-bars{
+.selected-option .fa-bars {
 	position: absolute;
 	top: 20px;
 	right: 25px;
 }
+
+.form-style #categories {
+	visibility: hidden;
+}
+
+/* Régle CSS pour désactiver le bouton Valider */
+
+.modal-wrapper .button:disabled {
+	background-color: #a7a7a7;
+}
+
+.button:disabled:hover {
+	cursor: pointer;
+	box-shadow: none;
+}
+.button:disabled:active {
+	opacity: 1;
+}
+
 /* Règles CSS pour la snackBarre (suppression et ajout d'un projet) */
 /* The snackbar - position it at the bottom and in the middle of the screen */
 #snackbar {
@@ -289,6 +360,9 @@
 }
 
 @media screen and (max-width: 550px) {
+	.modal-wrapper {
+		max-width: 65vw;
+	}
 	#modal-gallery {
 		grid-template-columns: 1fr 1fr 1fr;
 		max-height: calc(28vh);
@@ -300,6 +374,9 @@
 }
 
 @media screen and (max-width: 350px) {
+	.modal-wrapper {
+		max-width: 85vw;
+	}
 	#modal-gallery {
 		grid-template-columns: 1fr 1fr;
 		max-height: calc(24vh);

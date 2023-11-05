@@ -79,29 +79,13 @@ function removeAriaHidden() {
 	document.getElementById('user-modifications').removeAttribute('aria-hidden', true)
 	document.querySelector('.gallery').removeAttribute('aria-hidden', true)
 }
+
+//! MODALE DE SUPPRESSION DE PROJET !//
 //* Fonction qui permet de vider le containeur de la modale pour basculer d'une modale à l'autre //
 function deleteModalContent() {
 	const modalWrapper = document.querySelector('.modal-wrapper')
 	modalWrapper.innerHTML = ''
 }
-
-function listenModalEvents() {
-	const buttonAddPicture = document.querySelector('.modal-wrapper .add-picture')
-	if (buttonAddPicture !== null) {
-		buttonAddPicture.addEventListener('click', () => {
-			deleteModalContent()
-			addModalElement()
-		})
-	}
-	const leftReturnArrow = document.querySelector('.show')
-	if (leftReturnArrow !== null) {
-		leftReturnArrow.addEventListener('click', () => {
-			deleteModalContent()
-			deletModalElement()
-		})
-	}
-}
-
 //* Fonction qui permet de créer le contenu de la modale pour supprimer des projets //
 function deletModalElement() {
 	// Création du titre pour la modale de suppresion des travaux
@@ -196,6 +180,25 @@ async function deletElement(trashElement) {
 		console.error("Une erreur s'est produite", error)
 	}
 }
+
+//! MODALE AJOUT DE PROJET !//
+//* Fonction qui permet d'écouter un évenement pour passer à la modale d'ajout et de retourner à la modale de suppression
+function listenModalEvents() {
+	const buttonAddPicture = document.querySelector('.modal-wrapper .add-picture')
+	if (buttonAddPicture !== null) {
+		buttonAddPicture.addEventListener('click', () => {
+			deleteModalContent()
+			addModalElement()
+		})
+	}
+	const leftReturnArrow = document.querySelector('.show')
+	if (leftReturnArrow !== null) {
+		leftReturnArrow.addEventListener('click', () => {
+			deleteModalContent()
+			deletModalElement()
+		})
+	}
+}
 //* Fonction qui permet de créer le contenu de la modale pour ajouter des projets //
 function addModalElement() {
 	const modalH2 = document.createElement('h2')
@@ -206,6 +209,7 @@ function addModalElement() {
 	const modalHr = document.createElement('hr')
 	// Création d'un bouton pour valider l'envoi d'un fichier //
 	const modalBtn = document.createElement('button')
+	modalBtn.disabled = 'disabled'
 	modalBtn.classList.add('button')
 	modalBtn.innerText = 'Valider'
 	// Récupération de l'élément du DOM modal-wrapper //
@@ -225,6 +229,8 @@ function addModalElement() {
 	listenModalEvents()
 	// Fonction qui permet de fermer la modale avec un click sur la croix ou en dehors de la modale //
 	closeModal()
+	// Fonction qui va permettre de récuprer l'img de l'input file
+	previewPicture()
 }
 //* Fonction qui permet de créer le formulaire dans la mmodale pour ajouter un projet //
 function createFormAddElement() {
@@ -247,10 +253,42 @@ function createFormAddElement() {
 
 // * Fonction qui permet de créer l'input pour ajouter une photos au nouveau projet //
 function creatInputAddPictureElement() {
-	const inputImg = document.createElement('input')
-	inputImg.classList.add('input-image')
+	const divInputFile = document.createElement('div')
+	divInputFile.classList.add('containeur-input-files')
+	const containeurLabelInput = document.createElement('div')
+	containeurLabelInput.classList.add('containeur-label-input')
+	const labelInputFile = document.createElement('label')
+	labelInputFile.classList.add('label-input-file')
+	labelInputFile.setAttribute('for', 'input-file')
+	const iconInputFile = document.createElement('i')
+	iconInputFile.classList.add('fa-regular', 'fa-image')
+	iconInputFile.setAttribute('aria-hidden', true)
+	const spanInputFileText = document.createElement('span')
+	spanInputFileText.innerHTML = '+ Ajouter photo'
+	spanInputFileText.classList.add('span-input-file-text')
+	const spanInputFileSizeMax = document.createElement('span')
+	spanInputFileSizeMax.classList.add('span-input-file-size')
+	spanInputFileSizeMax.innerText = 'jpg, png : 4mo max'
+	const inputFile = document.createElement('input')
+	inputFile.type = 'file'
+	inputFile.id = 'input-file'
+	inputFile.accept = '.jpg, .png'
+	const image = document.createElement('img')
+	image.src = '#'
+	image.alt = ''
+	image.id = 'preview-image'
+
+	labelInputFile.appendChild(iconInputFile)
+	labelInputFile.appendChild(spanInputFileText)
+	labelInputFile.appendChild(spanInputFileSizeMax)
+
+	containeurLabelInput.appendChild(labelInputFile)
+	containeurLabelInput.appendChild(inputFile)
+	divInputFile.appendChild(containeurLabelInput)
+	divInputFile.appendChild(image)
+
 	const modalForm = document.getElementById('modal-form')
-	modalForm.appendChild(inputImg)
+	modalForm.appendChild(divInputFile)
 }
 
 // * Fonction qui permet de créer l'input pour ajouter un titre au nouveau projet //
@@ -309,9 +347,10 @@ function creatContaineurSelectAndListOption(categories) {
 	ulOptions.classList.add('options')
 
 	for (let i = 0; i < categories.length; i++) {
+		const item = categories[i]
 		const li = document.createElement('li')
-		li.setAttribute('data-value', `${categories[i].name}`)
-		li.innerText = `${categories[i].name}`
+		li.setAttribute('data-value', `${item.name}`)
+		li.innerText = `${item.name.replace(/Ho/g, 'Hô')}`
 		ulOptions.appendChild(li)
 	}
 
@@ -323,40 +362,63 @@ function creatContaineurSelectAndListOption(categories) {
 	containeurSelect.appendChild(realSelect)
 	document.getElementById('modal-form').appendChild(containeurSelect)
 }
-//* Fonction qui gére l'affichage du faux select et qui modifie la value du vrai select //
-//! Voir pour raccourcir la fonction
-function manageSelectInteraction() {
-	//Sécléction des différents éléments nécessaires pour gérer l'affichage //
-	const modalForm = document.getElementById('modal-form')
-	const customSelect = document.querySelector('.custom-select')
-	const selectedOption = customSelect.querySelector('.selected-option')
-	const optionList = customSelect.querySelector('.options')
-	const realSelect = customSelect.querySelector('#categories')
+
+function creatChevronDown() {
+	const selectedOption = document.querySelector('.selected-option')
 	// Création de l'icone chevron vers le bas //
 	const chevronDown = document.createElement('i')
 	chevronDown.classList.add('fa-solid', 'fa-chevron-down')
+	chevronDown.setAttribute('aria-hidden', true)
 	selectedOption.appendChild(chevronDown)
-	// Création de l'icone trois barres //
+}
+
+function creatBarsOpen() {
+	const selectedOption = document.querySelector('.selected-option')
 	const barsOpen = document.createElement('i')
 	barsOpen.classList.add('fa-solid', 'fa-bars')
+	barsOpen.setAttribute('aria-hidden', true)
+	selectedOption.appendChild(barsOpen)
+}
+
+//* Fonction qui gére l'affichage du faux select et qui modifie la value du vrai select //
+function manageSelectInteraction() {
+	//Sécléction des différents éléments nécessaires pour gérer l'affichage //
+	const modalForm = document.getElementById('modal-form')
+	const selectedOption = document.querySelector('.selected-option')
+	const optionList = document.querySelector('.options')
+	const realSelect = document.querySelector('#categories')
+	// Création de l'icone chevron vers le bas //
+	creatChevronDown()
+	// Appel de la fonction qui permet d'écouter l'évenement sur le chevron vers le bas //
+	// listenEvenementChevron()
 
 	selectedOption.addEventListener('click', () => {
 		optionList.style.display = optionList.style.display === 'block' ? 'none' : 'block'
-		chevronDown.style.visibility = 'hidden'
-		modalForm.style.marginBottom = '180px'
-		selectedOption.appendChild(barsOpen)
-		barsOpen.style.visibility = 'visible'
+		// Création de l'icone trois barres //
+		if (modalForm.style.marginBottom !== '180px') {
+			document.querySelector('.fa-chevron-down').style.visibility = 'hidden'
+			creatBarsOpen()
+			modalForm.style.marginBottom = '180px'
+		} else {
+			document.querySelector('.fa-bars').remove()
+			modalForm.style.marginBottom = '30px'
+			document.querySelector('.fa-chevron-down').style.visibility = 'visible'
+		}
 	})
+
 	optionList.addEventListener('click', (event) => {
 		if (event.target && event.target.tagName === 'LI') {
 			selectedOption.textContent = event.target.textContent
-			// Ajout de l'icone avec leur valeur car il est supprimé
-			selectedOption.appendChild(chevronDown)
+			// Ajout de l'icone chevron vers le bas, car supprimé lors du rajout du text //
+			creatChevronDown()
+			// listenEvenementChevron()
 			realSelect.value = event.target.getAttribute('data-value')
 			optionList.style.display = 'none'
 			modalForm.style.marginBottom = '30px'
-			chevronDown.style.visibility = 'visible'
-			barsOpen.style.visibility = 'hidden'
+
+			if (document.querySelector('.fa-bars') !== null) {
+				document.querySelector('.fa-bars').remove()
+			}
 		}
 	})
 
@@ -364,13 +426,54 @@ function manageSelectInteraction() {
 		if (event.target !== selectedOption) {
 			optionList.style.display = 'none'
 			modalForm.style.marginBottom = '30px'
-			chevronDown.style.visibility = 'visible'
-			barsOpen.style.visibility = 'hidden'
+			document.querySelector('.fa-chevron-down').style.visibility = 'visible'
+
+			if (document.querySelector('.fa-bars') !== null) {
+				document.querySelector('.fa-bars').remove()
+			}
 		}
 	})
 }
 
-//* Fonction qui permet de créer la snack barre lorsque la modale est présente
+// Cette fonction permet d'écouter l'évenement click sur le chevron vers le bas //
+
+// function listenEvenementChevron() {
+// 	const chevronDown = document.querySelector('.fa-chevron-down')
+// 	const modalForm = document.getElementById('modal-form')
+// 	const optionList = document.querySelector('.options')
+// 	chevronDown.addEventListener('click', () => {
+// 		console.log('hello')
+// 		optionList.style.display = optionList.style.display === 'block' ? 'none' : 'block'
+// 		chevronDown.style.visibility = 'hidden'
+// 		creatBarsOpen()
+// 		modalForm.style.marginBottom = '180px'
+// 	})
+// }
+
+function previewPicture() {
+	// Séléction des différents balises //
+	const uploadFile = document.getElementById('input-file')
+	const image = document.getElementById('preview-image')
+	const divLabelInput = document.querySelector('.containeur-label-input')
+
+	uploadFile.addEventListener('change', () => {
+
+		divLabelInput.style.display = 'none'
+
+		let reader = new FileReader()
+		reader.readAsDataURL(uploadFile.files[0])
+		console.log(reader)
+		console.log(uploadFile.files)
+		reader.onload = () => {
+			image.alt = 'Image upload'
+			image.src = `${reader.result}`
+			image.style.display = 'block'
+		}
+	})
+	return uploadFile
+}
+//! SNACKBAR SUPPRESSION ET AJOUT DE PROJET !//
+//* Fonction qui permet de créer la snack barre lorsque la modale est présente //
 function creationSnackBar() {
 	const divSnackBar = document.getElementById('snackbar')
 	if (divSnackBar === null) {
