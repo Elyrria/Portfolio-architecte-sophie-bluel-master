@@ -182,23 +182,7 @@ async function deletElement(trashElement) {
 }
 
 //! MODALE AJOUT DE PROJET !//
-//* Fonction qui permet d'écouter un évenement pour passer à la modale d'ajout et de retourner à la modale de suppression
-function listenModalEvents() {
-	const buttonAddPicture = document.querySelector('.modal-wrapper .add-picture')
-	if (buttonAddPicture !== null) {
-		buttonAddPicture.addEventListener('click', () => {
-			deleteModalContent()
-			addModalElement()
-		})
-	}
-	const leftReturnArrow = document.querySelector('.show')
-	if (leftReturnArrow !== null) {
-		leftReturnArrow.addEventListener('click', () => {
-			deleteModalContent()
-			deletModalElement()
-		})
-	}
-}
+
 //* Fonction qui permet de créer le contenu de la modale pour ajouter des projets //
 function addModalElement() {
 	const modalH2 = document.createElement('h2')
@@ -209,8 +193,8 @@ function addModalElement() {
 	const modalHr = document.createElement('hr')
 	// Création d'un bouton pour valider l'envoi d'un fichier //
 	const modalBtn = document.createElement('button')
-	modalBtn.disabled = 'disabled'
 	modalBtn.classList.add('button')
+	modalBtn.id = 'submit-button'
 	modalBtn.innerText = 'Valider'
 	// Récupération de l'élément du DOM modal-wrapper //
 	const modalWrapper = document.querySelector('.modal-wrapper')
@@ -229,8 +213,6 @@ function addModalElement() {
 	listenModalEvents()
 	// Fonction qui permet de fermer la modale avec un click sur la croix ou en dehors de la modale //
 	closeModal()
-	// Fonction qui va permettre de récuprer l'img de l'input file
-	previewPicture()
 }
 //* Fonction qui permet de créer le formulaire dans la mmodale pour ajouter un projet //
 function createFormAddElement() {
@@ -239,6 +221,13 @@ function createFormAddElement() {
 	modalForm.id = 'modal-form'
 	modalForm.action = '#'
 	modalForm.method = 'post'
+	const divInputFile = document.createElement('div')
+	divInputFile.classList.add('containeur-input-files')
+	const spanErrorMessage = document.createElement('span')
+	spanErrorMessage.id = 'error-message-files'
+
+	modalForm.appendChild(divInputFile)
+	modalForm.appendChild(spanErrorMessage)
 
 	document.querySelector('.modal-wrapper hr').before(modalForm)
 
@@ -246,15 +235,14 @@ function createFormAddElement() {
 	creatInputTitleElement()
 	//Récupération du localStorage des catégories
 	const categories = JSON.parse(window.localStorage.getItem('categories'))
-	creatSelectCategoriesElement(categories)
-	creatContaineurSelectAndListOption(categories)
+	creatSelectfField(categories)
+	creatCustomSelectfField(categories)
 	manageSelectInteraction()
+	ListenEventForm()
 }
 
 // * Fonction qui permet de créer l'input pour ajouter une photos au nouveau projet //
 function creatInputAddPictureElement() {
-	const divInputFile = document.createElement('div')
-	divInputFile.classList.add('containeur-input-files')
 	const containeurLabelInput = document.createElement('div')
 	containeurLabelInput.classList.add('containeur-label-input')
 	const labelInputFile = document.createElement('label')
@@ -273,6 +261,7 @@ function creatInputAddPictureElement() {
 	inputFile.type = 'file'
 	inputFile.id = 'input-file'
 	inputFile.accept = '.jpg, .png'
+	inputFile.setAttribute('requierd', '')
 	const image = document.createElement('img')
 	image.src = '#'
 	image.alt = ''
@@ -284,11 +273,13 @@ function creatInputAddPictureElement() {
 
 	containeurLabelInput.appendChild(labelInputFile)
 	containeurLabelInput.appendChild(inputFile)
-	divInputFile.appendChild(containeurLabelInput)
-	divInputFile.appendChild(image)
 
-	const modalForm = document.getElementById('modal-form')
-	modalForm.appendChild(divInputFile)
+	const containeurInputFiles = document.querySelector('.containeur-input-files')
+	containeurInputFiles.appendChild(containeurLabelInput)
+	containeurInputFiles.appendChild(image)
+	checkFormValidity()
+	// Fonction qui va permettre de récuprer l'img de l'input file
+	previewPicture()
 }
 
 // * Fonction qui permet de créer l'input pour ajouter un titre au nouveau projet //
@@ -296,12 +287,12 @@ function creatInputTitleElement() {
 	const labelInputTitle = document.createElement('label')
 	labelInputTitle.innerText = 'Titre'
 	labelInputTitle.classList.add('label-style')
-	labelInputTitle.for = 'title'
+	labelInputTitle.setAttribute('for', 'input-title')
 	const inputTitle = document.createElement('input')
 	inputTitle.classList.add('input-style')
 	inputTitle.setAttribute('type', 'text')
-	inputTitle.id = 'title'
-	inputTitle.name = 'title'
+	inputTitle.id = 'input-title'
+	inputTitle.name = 'input-title'
 	inputTitle.setAttribute('requierd', '')
 
 	const modalForm = document.getElementById('modal-form')
@@ -311,16 +302,20 @@ function creatInputTitleElement() {
 
 // * Fonction qui permet de créer le select pour choisir une des catégories pour le  nouveau projet //
 //? Paramètre [array] type string
-function creatSelectCategoriesElement(categories) {
+function creatSelectfField(categories) {
 	const labelSelectCategories = document.createElement('label')
 	labelSelectCategories.innerText = 'Catégorie'
 	labelSelectCategories.classList.add('label-style')
-	labelSelectCategories.for = 'categories'
+	labelSelectCategories.for = 'select-field'
 	const selectCategories = document.createElement('select')
 	selectCategories.classList.add('input-style')
-	selectCategories.id = 'categories'
-	selectCategories.name = 'categories'
+	selectCategories.id = 'select-field'
+	selectCategories.name = 'select-field'
 	selectCategories.setAttribute('requierd', '')
+	const selectOptionDisabled = document.createElement('option')
+	selectOptionDisabled.setAttribute('selected', '')
+	selectOptionDisabled.setAttribute('disabled', '')
+	selectCategories.appendChild(selectOptionDisabled)
 	// Création des options pour chaque catégorie du tableau categories
 	for (let category of categories) {
 		const selectOption = document.createElement('option')
@@ -331,14 +326,13 @@ function creatSelectCategoriesElement(categories) {
 		selectOption.innerText = textOption
 		selectCategories.appendChild(selectOption)
 	}
-
 	const modalForm = document.getElementById('modal-form')
 	modalForm.appendChild(labelSelectCategories)
 	modalForm.appendChild(selectCategories)
 }
 //* Fonction qui permet de créer la fausse liste de séléction
 //? Paramètre [array] type string
-function creatContaineurSelectAndListOption(categories) {
+function creatCustomSelectfField(categories) {
 	const containeurSelect = document.createElement('div')
 	containeurSelect.classList.add('custom-select')
 	const spanSelectOption = document.createElement('span')
@@ -355,7 +349,7 @@ function creatContaineurSelectAndListOption(categories) {
 	}
 
 	// Récupération de la balise Select pour l'introduire dans la div custom-select //
-	const realSelect = document.getElementById('categories')
+	const realSelect = document.getElementById('select-field')
 	// spanSelectOption.appendChild(chevronDown)
 	containeurSelect.appendChild(spanSelectOption)
 	containeurSelect.appendChild(ulOptions)
@@ -386,7 +380,7 @@ function manageSelectInteraction() {
 	const modalForm = document.getElementById('modal-form')
 	const selectedOption = document.querySelector('.selected-option')
 	const optionList = document.querySelector('.options')
-	const realSelect = document.querySelector('#categories')
+	const realSelect = document.getElementById('select-field')
 	// Création de l'icone chevron vers le bas //
 	creatChevronDown()
 	// Appel de la fonction qui permet d'écouter l'évenement sur le chevron vers le bas //
@@ -412,6 +406,7 @@ function manageSelectInteraction() {
 			// Ajout de l'icone chevron vers le bas, car supprimé lors du rajout du text //
 			creatChevronDown()
 			// listenEvenementChevron()
+			console.log(event.target.getAttribute('data-value'))
 			realSelect.value = event.target.getAttribute('data-value')
 			optionList.style.display = 'none'
 			modalForm.style.marginBottom = '30px'
@@ -453,25 +448,110 @@ function manageSelectInteraction() {
 function previewPicture() {
 	// Séléction des différents balises //
 	const uploadFile = document.getElementById('input-file')
-	const image = document.getElementById('preview-image')
+	const picturePreview = document.getElementById('preview-image')
 	const divLabelInput = document.querySelector('.containeur-label-input')
 
 	uploadFile.addEventListener('change', () => {
-
-		divLabelInput.style.display = 'none'
-
-		let reader = new FileReader()
-		reader.readAsDataURL(uploadFile.files[0])
-		console.log(reader)
-		console.log(uploadFile.files)
-		reader.onload = () => {
-			image.alt = 'Image upload'
-			image.src = `${reader.result}`
-			image.style.display = 'block'
-		}
+		//Récupération de l'objet image  //
+		const [picture] = uploadFile.files
+		// Tableau type qui reprend les type de fichier autorisé //
+		const types = ['image/jpg', 'image/jpeg', 'image/png']
+		// Converti la taille de l'image en mo //
+		const pictureSize = picture.size / (1024 * 1024)
+		const pictureType = picture.type
+		// Récupération de l'extension du fichier //
+		const pictureExtension = `.${pictureType.split('/').pop()}`
+		try {
+			if (!types.includes(pictureType)) {
+				clearAndReshow()
+				showMessageErrorTypeOrSize(
+					`Le fichier que vous essayez d'insérer : ${pictureExtension} n'est pas valide `
+				)
+			} else if (pictureSize > 4) {
+				clearAndReshow()
+				showMessageErrorTypeOrSize(
+					`Ce fichier pèse ${pictureSize.toFixed(2)} mo, il est trop volumineux (4mo max)`
+				)
+			} else {
+				divLabelInput.style.display = 'none'
+				let reader = new FileReader()
+				reader.readAsDataURL(uploadFile.files[0])
+				reader.onload = () => {
+					picturePreview.alt = 'Image upload'
+					picturePreview.src = `${reader.result}`
+					picturePreview.style.display = 'block'
+					showMessageErrorTypeOrSize('')
+					const pictureURL = reader.result
+					// manageFormAddWork(pictureURL)
+				}
+			}
+		} catch {}
 	})
-	return uploadFile
 }
+
+function checkFormValidity() {
+	const inputFile = document.getElementById('input-file')
+	const inputTitle = document.getElementById('input-title')
+	const selectField = document.getElementById('select-field')
+	const submitButton = document.getElementById('submit-button')
+
+	if (inputFile.files.length > 0 && inputTitle.value.trim() !== '' && selectField.value !== '') {
+		submitButton.removeAttribute('disabled') // Activer le bouton
+	} else {
+		submitButton.setAttribute('disabled', 'disabled') // Désactiver le bouton
+		// 	if (selectField.value !== '') {
+		// 		console.log(selectField.value)
+		// 	}
+	}
+}
+
+function ListenEventForm() {
+	document.getElementById('input-file').addEventListener('change', checkFormValidity)
+	document.getElementById('input-title').addEventListener('input', checkFormValidity)
+	document.getElementById('select-field').addEventListener('change', checkFormValidity)
+}
+
+async function manageFormAddWork(pictureURL) {
+	console.log(pictureURL)
+	const titleValue = document.getElementById('title').value
+	console.log(titleValue)
+}
+
+//* Fonction qui permet de nettoyer et de réafficher l'input pour la photo //
+function clearAndReshow() {
+	// Sélection du conataineur de l'input pour le fichier à insérer //
+	const containeurInputFile = document.querySelector('.containeur-input-files')
+	// Vide avec une string vide
+	containeurInputFile.innerHTML = ''
+	// Réaffichage des éléments dans le containeur //
+	creatInputAddPictureElement()
+}
+//* Fonction qui va permettre d'afficher le message d'erreur en fonction du type d'erreur //
+function showMessageErrorTypeOrSize(errorMessage) {
+	// Affichage du message d'erreur
+	const spanErrorMessage = document.getElementById('error-message-files')
+	spanErrorMessage.innerText = errorMessage
+}
+
+//! SWITCH ENTRE MODALE //
+//* Fonction qui permet d'écouter un évenement pour passer à la modale d'ajout et de retourner à la modale de suppression
+function listenModalEvents() {
+	const buttonAddPicture = document.querySelector('.modal-wrapper .add-picture')
+	if (buttonAddPicture !== null) {
+		buttonAddPicture.addEventListener('click', () => {
+			deleteModalContent()
+			addModalElement()
+		})
+	}
+	const leftReturnArrow = document.querySelector('.show')
+	if (leftReturnArrow !== null) {
+		leftReturnArrow.addEventListener('click', () => {
+			deleteModalContent()
+			deletModalElement()
+		})
+	}
+}
+
 //! SNACKBAR SUPPRESSION ET AJOUT DE PROJET !//
 //* Fonction qui permet de créer la snack barre lorsque la modale est présente //
 function creationSnackBar() {

@@ -174,15 +174,33 @@
 #input-file {
 	display: none;
 }
+
 #preview-image {
 	display: none;
 	height: 100%;
 	object-fit: cover;
 }
+
+/* Régles CSS message d'erreur du fichier dans l'InputFile */
+
+#error-message-files {
+	display: block;
+	font-size: 0.7rem;
+	height: 14px;
+	text-align: center;
+	font-weight: bold;
+	margin-top: 8px;
+	color: black;
+}
+
+/* Règles CSS Input label title */
+
 #modal-form #title {
 	color: #444444;
 	padding-left: 25px;
 }
+
+/* Régles CSS Select */
 
 .custom-select {
 	position: relative;
@@ -242,7 +260,7 @@
 	right: 25px;
 }
 
-.form-style #categories {
+.form-style #select-field {
 	visibility: hidden;
 }
 
