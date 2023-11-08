@@ -18,7 +18,7 @@
 }
 
 .modal-wrapper {
-	max-width: 45vw;
+	max-width: 80vw;
 	width: 100%;
 	max-height: 100vh;
 	display: flex;
@@ -195,7 +195,7 @@
 
 /* Règles CSS Input label title */
 
-#modal-form #title {
+#modal-form #input-title {
 	color: #444444;
 	padding-left: 25px;
 }
@@ -352,6 +352,9 @@
 /* Régles CSS pour les différentes dimensions d'écran  ***MédiasQuerry***  */
 
 @media screen and (min-width: 1140px) {
+	.modal-wrapper {
+		max-width: 800px;
+	}
 	.modal-wrapper h2 {
 		font-size: 2rem;
 	}
@@ -379,7 +382,7 @@
 
 @media screen and (max-width: 550px) {
 	.modal-wrapper {
-		max-width: 65vw;
+		max-width: 95vw;
 	}
 	#modal-gallery {
 		grid-template-columns: 1fr 1fr 1fr;
@@ -393,7 +396,7 @@
 
 @media screen and (max-width: 350px) {
 	.modal-wrapper {
-		max-width: 85vw;
+		max-width: 100vw;
 	}
 	#modal-gallery {
 		grid-template-columns: 1fr 1fr;
@@ -406,5 +409,12 @@
 	.modal-wrapper .button {
 		width: 70%;
 		height: 50px;
+	}
+}
+
+@media screen and (max-width: 285px) {
+	.fa-bars,
+	.fa-chevron-down {
+		display: none;
 	}
 }

@@ -1,5 +1,5 @@
 //? Import des fonction nécessaire pour modifier la modale//
-import { creationModal } from './modale.js'
+import { creatModal } from './modale.js'
 
 //? RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES TRAVAUX //
 export async function refreshWorks(forceFlag) {
@@ -15,7 +15,7 @@ export async function refreshWorks(forceFlag) {
 				},
 			})
 			if (!response.ok) {
-				//Gérer l'erreur ici
+				//Gére l'erreur ici
 				throw new Error(`HTTP ${response.status}`)
 			} else if (response.ok) {
 				let responseData = await response.json()
@@ -75,7 +75,7 @@ async function refreshCategories(forceFlag) {
 			})
 
 			if (!response.ok) {
-				//Gérer l'erreur ici
+				//Gére l'erreur ici
 				throw new Error(`HTTP ${response.status}`)
 			} else if (response.ok) {
 				// Stockage dans le localStorag //
@@ -131,7 +131,7 @@ function listenFilter(categories) {
 	//* Récupération des noms de chaque catégories et stockage dans la const categoriesName //
 	const categoriesName = categories.map((name) => name.name)
 	// Ajout au tableau la string Tous //
-	categoriesName.push('tous')
+	categoriesName.push('Tous')
 	//* Écoute de chaque button filters //
 	const filtersBtns = document.querySelectorAll('.filters button')
 	// Écoute de l'ensemble des boutons filtre //
@@ -242,7 +242,7 @@ function addButtonModify() {
 	document.querySelector('.filters').before(newDiv)
 	//* Écoute du clic sur le bouton "modifier" //
 	document.getElementById('edit-btn').addEventListener('click', () => {
-		creationModal()
+		creatModal()
 	})
 }
 

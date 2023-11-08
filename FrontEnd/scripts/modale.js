@@ -1,7 +1,9 @@
+// !!!!!!!!!! Les commentaires en gris, les rajouter à gauche de l'élément commenté !!!!!!//
+
 import { refreshWorks } from './script.js'
 //? CRÉATION DE LA MODALE
 //* Fonction qui permet de créer la modale
-export function creationModal() {
+export function creatModal() {
 	//Création de l'aside qui contiendra la modale
 	const modalContaineur = document.createElement('aside')
 	modalContaineur.id = 'modal'
@@ -80,12 +82,6 @@ function removeAriaHidden() {
 	document.querySelector('.gallery').removeAttribute('aria-hidden', true)
 }
 
-//! MODALE DE SUPPRESSION DE PROJET !//
-//* Fonction qui permet de vider le containeur de la modale pour basculer d'une modale à l'autre //
-function deleteModalContent() {
-	const modalWrapper = document.querySelector('.modal-wrapper')
-	modalWrapper.innerHTML = ''
-}
 //* Fonction qui permet de créer le contenu de la modale pour supprimer des projets //
 function deletModalElement() {
 	// Création du titre pour la modale de suppresion des travaux
@@ -155,7 +151,7 @@ async function createModalGallery() {
 		})
 	}
 }
-//*Fonction qui permet de supprimer un travail //
+//*Fonction qui permet de supprimer un projet //
 //@param {number} trashElement
 async function deletElement(trashElement) {
 	const tokenData = JSON.parse(window.sessionStorage.getItem('token'))
@@ -213,6 +209,7 @@ function addModalElement() {
 	listenModalEvents()
 	// Fonction qui permet de fermer la modale avec un click sur la croix ou en dehors de la modale //
 	closeModal()
+	ListenEventForm()
 }
 //* Fonction qui permet de créer le formulaire dans la mmodale pour ajouter un projet //
 function createFormAddElement() {
@@ -231,18 +228,18 @@ function createFormAddElement() {
 
 	document.querySelector('.modal-wrapper hr').before(modalForm)
 
-	creatInputAddPictureElement()
+	creatInputFile()
 	creatInputTitleElement()
 	//Récupération du localStorage des catégories
 	const categories = JSON.parse(window.localStorage.getItem('categories'))
 	creatSelectfField(categories)
 	creatCustomSelectfField(categories)
 	manageSelectInteraction()
-	ListenEventForm()
+	checkFormValidity()
 }
 
 // * Fonction qui permet de créer l'input pour ajouter une photos au nouveau projet //
-function creatInputAddPictureElement() {
+function creatInputFile() {
 	const containeurLabelInput = document.createElement('div')
 	containeurLabelInput.classList.add('containeur-label-input')
 	const labelInputFile = document.createElement('label')
@@ -277,7 +274,6 @@ function creatInputAddPictureElement() {
 	const containeurInputFiles = document.querySelector('.containeur-input-files')
 	containeurInputFiles.appendChild(containeurLabelInput)
 	containeurInputFiles.appendChild(image)
-	checkFormValidity()
 	// Fonction qui va permettre de récuprer l'img de l'input file
 	previewPicture()
 }
@@ -317,11 +313,14 @@ function creatSelectfField(categories) {
 	selectOptionDisabled.setAttribute('disabled', '')
 	selectCategories.appendChild(selectOptionDisabled)
 	// Création des options pour chaque catégorie du tableau categories
-	for (let category of categories) {
+	let compteur = 1
+	for (let i = 0; i < categories.length; i++) {
+		const item = categories[i]
 		const selectOption = document.createElement('option')
-		const valueOption = category.name
+		const valueOption = compteur
+		compteur++
 		// const valueOption = category.name.replace(/ /g, '').replace(/&r/g, 'EtR')
-		const textOption = category.name.replace(/Ho/g, 'Hô')
+		const textOption = item.name.replace(/Ho/g, 'Hô')
 		selectOption.value = valueOption
 		selectOption.innerText = textOption
 		selectCategories.appendChild(selectOption)
@@ -343,7 +342,7 @@ function creatCustomSelectfField(categories) {
 	for (let i = 0; i < categories.length; i++) {
 		const item = categories[i]
 		const li = document.createElement('li')
-		li.setAttribute('data-value', `${item.name}`)
+		li.dataset.id = item.id
 		li.innerText = `${item.name.replace(/Ho/g, 'Hô')}`
 		ulOptions.appendChild(li)
 	}
@@ -383,6 +382,7 @@ function manageSelectInteraction() {
 	const realSelect = document.getElementById('select-field')
 	// Création de l'icone chevron vers le bas //
 	creatChevronDown()
+
 	// Appel de la fonction qui permet d'écouter l'évenement sur le chevron vers le bas //
 	// listenEvenementChevron()
 
@@ -406,8 +406,7 @@ function manageSelectInteraction() {
 			// Ajout de l'icone chevron vers le bas, car supprimé lors du rajout du text //
 			creatChevronDown()
 			// listenEvenementChevron()
-			console.log(event.target.getAttribute('data-value'))
-			realSelect.value = event.target.getAttribute('data-value')
+			realSelect.value = event.target.getAttribute('data-id')
 			optionList.style.display = 'none'
 			modalForm.style.marginBottom = '30px'
 
@@ -445,6 +444,30 @@ function manageSelectInteraction() {
 // 	})
 // }
 
+function checkFormValidity() {
+	const inputFile = document.getElementById('input-file')
+	const inputTitle = document.getElementById('input-title').value
+	const selectField = document.getElementById('select-field').value
+	const submitButton = document.getElementById('submit-button')
+
+	if (inputFile.files.length > 0 && inputTitle.trim() !== '' && selectField !== '') {
+		submitButton.removeAttribute('disabled', '') // Activer le bouton
+		manageFormAddWork()
+	} else {
+		submitButton.setAttribute('disabled', '') // Désactiver le bouton
+	}
+}
+
+function ListenEventForm() {
+	document.getElementById('input-file').addEventListener('change', checkFormValidity)
+	document.querySelector('.selected-option').addEventListener('click', () => {
+		// Permet de laisser un délai avant d'exécuter la fonction checkFormValidity //
+		setTimeout(checkFormValidity, 2000)
+	})
+	// document.getElementById('select-field').addEventListener('change', checkFormValidity) //!! Ne fonctionne pas car c'est une fonction qui modifie la valeur. Il est impossible de rentrer en  !!//
+	document.getElementById('input-title').addEventListener('input', checkFormValidity)
+}
+
 function previewPicture() {
 	// Séléction des différents balises //
 	const uploadFile = document.getElementById('input-file')
@@ -461,60 +484,79 @@ function previewPicture() {
 		const pictureType = picture.type
 		// Récupération de l'extension du fichier //
 		const pictureExtension = `.${pictureType.split('/').pop()}`
-		try {
-			if (!types.includes(pictureType)) {
-				clearAndReshow()
-				showMessageErrorTypeOrSize(
-					`Le fichier que vous essayez d'insérer : ${pictureExtension} n'est pas valide `
-				)
-			} else if (pictureSize > 4) {
-				clearAndReshow()
-				showMessageErrorTypeOrSize(
-					`Ce fichier pèse ${pictureSize.toFixed(2)} mo, il est trop volumineux (4mo max)`
-				)
-			} else {
-				divLabelInput.style.display = 'none'
-				let reader = new FileReader()
-				reader.readAsDataURL(uploadFile.files[0])
-				reader.onload = () => {
-					picturePreview.alt = 'Image upload'
-					picturePreview.src = `${reader.result}`
-					picturePreview.style.display = 'block'
-					showMessageErrorTypeOrSize('')
-					const pictureURL = reader.result
-					// manageFormAddWork(pictureURL)
-				}
+
+		if (!types.includes(pictureType)) {
+			clearAndReshow()
+			showMessageErrorTypeOrSize(
+				`Le fichier que vous essayez d'insérer : ${pictureExtension} n'est pas valide `
+			)
+		} else if (pictureSize > 4) {
+			clearAndReshow()
+			showMessageErrorTypeOrSize(
+				`Ce fichier pèse ${pictureSize.toFixed(2)} mo, il est trop volumineux (4mo max)`
+			)
+		} else {
+			divLabelInput.style.display = 'none' // Cache le containeur de l'input //
+
+			let reader = new FileReader()
+			reader.readAsDataURL(uploadFile.files[0])
+			reader.onload = () => {
+				picturePreview.alt = 'Image upload'
+				picturePreview.src = reader.result
+				picturePreview.style.display = 'block' // Affiche la balise image //
+				showMessageErrorTypeOrSize('')
 			}
-		} catch {}
+		}
 	})
 }
 
-function checkFormValidity() {
-	const inputFile = document.getElementById('input-file')
-	const inputTitle = document.getElementById('input-title')
-	const selectField = document.getElementById('select-field')
-	const submitButton = document.getElementById('submit-button')
+async function manageFormAddWork() {
+	document.getElementById('submit-button').addEventListener('click', (event) => {
+		event.preventDefault()
 
-	if (inputFile.files.length > 0 && inputTitle.value.trim() !== '' && selectField.value !== '') {
-		submitButton.removeAttribute('disabled') // Activer le bouton
-	} else {
-		submitButton.setAttribute('disabled', 'disabled') // Désactiver le bouton
-		// 	if (selectField.value !== '') {
-		// 		console.log(selectField.value)
-		// 	}
+		// const image = document.getElementById('preview-image').src
+		const inputFile = document.getElementById('input-file').files[0]
+		const inputTitleValue = document.getElementById('input-title').value
+		const selectFieldId = document.getElementById('select-field').value
+
+		const formData = new FormData()
+
+		formData.append('image', inputFile)
+		formData.append('title', inputTitleValue)
+		formData.append('category', selectFieldId)
+		formData.forEach((value, key) => {
+			console.log(typeof key, typeof value)
+			console.log(key, value)
+		})
+		addWork(formData)
+	})
+}
+
+async function addWork(formData) {
+	const tokenData = JSON.parse(window.sessionStorage.getItem('token'))
+	const token = `Bearer ${tokenData.token}`
+
+	try {
+		const response = await fetch('http://localhost:5678/api/works', {
+			method: 'POST',
+			headers: {
+				accept: 'application/json',
+				Authorization: token,
+			},
+			body: formData,
+		})
+		if (!response.ok) {
+			//Gére l'erreur ici
+			throw new Error(`HTTP ${response.status}`)
+		} else if (response.ok) {
+			refreshWorks(true)
+			deleteModalContent()
+			addModalElement()
+			showMessageSnackbBar('Élément ajouté')
+		}
+	} catch (error) {
+		console.error("Une erreur s'est produite", error)
 	}
-}
-
-function ListenEventForm() {
-	document.getElementById('input-file').addEventListener('change', checkFormValidity)
-	document.getElementById('input-title').addEventListener('input', checkFormValidity)
-	document.getElementById('select-field').addEventListener('change', checkFormValidity)
-}
-
-async function manageFormAddWork(pictureURL) {
-	console.log(pictureURL)
-	const titleValue = document.getElementById('title').value
-	console.log(titleValue)
 }
 
 //* Fonction qui permet de nettoyer et de réafficher l'input pour la photo //
@@ -524,7 +566,7 @@ function clearAndReshow() {
 	// Vide avec une string vide
 	containeurInputFile.innerHTML = ''
 	// Réaffichage des éléments dans le containeur //
-	creatInputAddPictureElement()
+	creatInputFile()
 }
 //* Fonction qui va permettre d'afficher le message d'erreur en fonction du type d'erreur //
 function showMessageErrorTypeOrSize(errorMessage) {
@@ -534,6 +576,12 @@ function showMessageErrorTypeOrSize(errorMessage) {
 }
 
 //! SWITCH ENTRE MODALE //
+
+//* Fonction qui permet de vider le containeur de la modale pour basculer d'une modale à l'autre //
+function deleteModalContent() {
+	const modalWrapper = document.querySelector('.modal-wrapper')
+	modalWrapper.innerHTML = ''
+}
 //* Fonction qui permet d'écouter un évenement pour passer à la modale d'ajout et de retourner à la modale de suppression
 function listenModalEvents() {
 	const buttonAddPicture = document.querySelector('.modal-wrapper .add-picture')
