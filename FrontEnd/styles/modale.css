@@ -133,10 +133,6 @@
 
 .containeur-label-input {
 	width: 100%;
-	/* display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center; */
 }
 
 .fa-image {
@@ -284,8 +280,8 @@
 	visibility: hidden; /* Hidden by default. Visible on click */
 	min-width: 250px; /* Set a default minimum width */
 	margin-left: -125px; /* Divide value of min-width by 2 */
-	background-color: white; /* Black background color */
-	color: var(--main-color-text); /* White text color */
+	background-color: white; 
+	color: var(--main-color-text); 
 	text-align: center; /* Centered text */
 	border-radius: 10px; /* Rounded borders */
 	padding: 16px; /* Padding */

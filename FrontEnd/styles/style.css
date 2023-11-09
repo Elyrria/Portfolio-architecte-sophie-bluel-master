@@ -383,10 +383,7 @@ footer nav {
 	margin-right: 50px;
 }
 
-/* footer nav ul {
-	display: flex;
-	align-items: center;
-} */
+/*! Responsive !*/
 
 @media screen and (max-width: 600px) {
 	#contact {

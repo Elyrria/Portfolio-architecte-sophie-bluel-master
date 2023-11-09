@@ -38,12 +38,7 @@ function creatModalDivXMarkAndArrow() {
 }
 
 //* Fonction qui permet de fermer la modale //
-function closeModal() {
-	document.querySelector('#modal .fa-xmark').addEventListener('click', () => {
-		// Supprime la modale si click su la croix de fermeture //
-		document.getElementById('modal').remove() // Suppression de la modale //
-		removeAriaHidden() // Suppresion des attributs aria-hidden //
-	})
+function closeModalOutside() {
 	document.getElementById('modal').addEventListener('click', (e) => {
 		// Supprime la modale si l'utilisateur click en dehors //
 		if (e.target === e.currentTarget) {
@@ -51,6 +46,14 @@ function closeModal() {
 			document.getElementById('modal').remove() // Suppression de la modale //
 			removeAriaHidden() // Suppresion des attributs aria-hidden //
 		}
+	})
+}
+
+function closeModalCross() {
+	document.querySelector('#modal .fa-xmark').addEventListener('click', () => {
+		// Supprime la modale si click su la croix de fermeture //
+		document.getElementById('modal').remove() // Suppression de la modale //
+		removeAriaHidden() // Suppresion des attributs aria-hidden //
 	})
 }
 //* Fonction qui permet d'ajouter l'attribut aria-hidden à tous les éléments qui non pas besoin d'être visible quand la modale est ouverte //
@@ -153,7 +156,8 @@ function deleteProjectModal() {
 	creatModalDivXMarkAndArrow() // Ajout de la div contenant la flèche retour et la croix de fermeture //
 	createModalGallery() // Ajout de la gallerie pour la suppression des projets //
 	listenModalEvents() // Ajout des écouteurs d'événement qui permettront de switcher entre les modales //
-	closeModal() // Ajout d'écouteur d'évenement qui permettront de fermer la modale //
+	closeModalOutside() // Ajout d'écouteur d'évenement à l'extérieur de la modal pour la fermeture //
+	closeModalCross() // Ajout d'un écouteur d'évévenemnt sur la croix de fermeture de la modale //
 }
 //* Fonction qui permet d'afficher chaque projet la modale //
 async function createModalGallery() {
@@ -250,7 +254,7 @@ function addModalProject() {
 	leftArrow.classList.add('show')
 
 	listenModalEvents() // Ajout des écouteurs d'événement qui permettront de switcher entre les modales //
-	closeModal() // Fonction qui permet de fermer la modale avec un click sur la croix ou en dehors de la modale //
+	closeModalCross() // Ajout d'un écouteur d'évévenemnt sur la croix de fermeture de la modale //
 	ListenEventForm() // Ajout des écouteurs d'événement qui vont permettre de vérifier le changement de chaque champs du formulaire //
 }
 //* Fonction qui permet de créer le formulaire dans la mmodale pour ajouter un projet //
@@ -434,6 +438,7 @@ function creatBarsOpen() {
 //* Fonction qui gére l'affichage du faux select et qui modifie la value du vrai select //
 function manageSelectInteraction() {
 	//Sécléction des différents éléments nécessaires pour gérer l'affichage //
+	const modalWrapper = document.querySelector('.modal-wrapper')
 	const modalForm = document.getElementById('modal-form')
 	const selectedOption = document.querySelector('.selected-option')
 	const optionList = document.querySelector('.options')
@@ -441,14 +446,9 @@ function manageSelectInteraction() {
 
 	creatChevronDown() // Affichage de l'icone chevron vers le bas //
 
-	// !! Appel de la fonction qui permet d'écouter l'évenement sur le chevron vers le bas !!//
-	//!! listenEvenementChevron()
-
 	selectedOption.addEventListener('click', () => {
 		// Écoute de l'événement au click sur le span du faux select //
-
 		optionList.style.display = optionList.style.display === 'block' ? 'none' : 'block' // Opération térnaire, si optionList est strictement égal à block, tu actives none ou block sinon //
-
 		if (modalForm.style.marginBottom !== '180px') {
 			// Si le margin-bottom de la modalForm est différent de 180px //
 			document.querySelector('.fa-chevron-down').style.visibility = 'hidden' // Cache le chevron vers le bas //
@@ -468,7 +468,6 @@ function manageSelectInteraction() {
 			// Si le click sur l'option et si le cick sur l'option est une balise li alors  //
 			selectedOption.textContent = event.target.textContent // Ajoute au span le text de la balise li ciblée //
 			creatChevronDown() // Ajout de l'icone chevron vers le bas, car supprimé lors du rajout du text //
-			// !! listenEvenementChevron()
 			realSelect.value = event.target.getAttribute('data-id') // Modifie la valeur du vrai select par le data-id de la balise Li //
 			optionList.style.display = 'none' // Désactive l'affichage de la liste d'option //
 			modalForm.style.marginBottom = '30px' // Modifie le margin-bottom à 30 px //
@@ -480,7 +479,7 @@ function manageSelectInteraction() {
 		}
 	})
 
-	document.addEventListener('click', (event) => {
+	modalWrapper.addEventListener('click', (event) => {
 		// Écoute de l'événement au click sur l'extérieur de la liste d'options //
 		if (event.target !== selectedOption) {
 			// Si le click est en dehors de la liste d'option //
@@ -495,37 +494,24 @@ function manageSelectInteraction() {
 		}
 	})
 }
-{// !! Code à modifier //
-// Cette fonction permet d'écouter l'évenement click sur le chevron vers le bas //
-
-// function listenEvenementChevron() {
-// 	const chevronDown = document.querySelector('.fa-chevron-down')
-// 	const modalForm = document.getElementById('modal-form')
-// 	const optionList = document.querySelector('.options')
-// 	chevronDown.addEventListener('click', () => {
-// 		console.log('hello')
-// 		optionList.style.display = optionList.style.display === 'block' ? 'none' : 'block'
-// 		chevronDown.style.visibility = 'hidden'
-// 		creatBarsOpen()
-// 		modalForm.style.marginBottom = '180px'
-// 	})
-// }
-}
 
 //* Fonction qui permet de vérifier si les champs sont bien rempli //
 function checkFormValidity() {
-	// Séléction des différents élément du DOM nécessaire //
-	const inputFile = document.getElementById('input-file')
-	const inputTitle = document.getElementById('input-title').value
-	const selectField = document.getElementById('select-field').value
-	const submitButton = document.getElementById('submit-button')
+	const modalForm = document.getElementById('modal-form')
+	if (modalForm !== null) {
+		// Séléction des différents élément du DOM nécessaire //
+		const inputFile = document.getElementById('input-file')
+		const inputTitle = document.getElementById('input-title').value
+		const selectField = document.getElementById('select-field').value
+		const submitButton = document.getElementById('submit-button')
 
-	if (inputFile.files.length > 0 && inputTitle.trim() !== '' && selectField !== '') {
-		// Si l'input type file contien un fichier et si l'input type et le select field ne sont pas vide //
-		submitButton.removeAttribute('disabled', '') // Activer le bouton
-		manageFormAddWork()
-	} else {
-		submitButton.setAttribute('disabled', '') // Désactiver le bouton
+		if (inputFile.files.length > 0 && inputTitle.trim() !== '' && selectField !== '') {
+			// Si l'input type file contien un fichier et si l'input type et le select field ne sont pas vide //
+			submitButton.removeAttribute('disabled', '') // Activer le bouton
+			manageFormAddWork()
+		} else {
+			submitButton.setAttribute('disabled', '') // Désactiver le bouton
+		}
 	}
 }
 //* Fonction qui permet d'écouter les événements changes et click des inputs et du select du formulaire //
