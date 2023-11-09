@@ -1,12 +1,12 @@
-//? Import des fonction nécessaire pour modifier la modale//
+//? Import des fonction nécessaire pour afficher la modale//
 import { creatModal } from './modale.js'
 
-//? RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES TRAVAUX //
+//! RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES TRAVAUX ET CATÉGORIES //
+//* Fonction qui permet de récupérer les données des projets via l'API Swagger //
 export async function refreshWorks(forceFlag) {
 	try {
-		//* Récupération des travaux sur le localStorage //
-		let works = window.localStorage.getItem('works')
-		//* Si pas présent récupération via l'API et stockage dans le localStorage //
+		let works = window.localStorage.getItem('works') // Récupération des travaux sur le localStorage //
+		// Si pas présent récupération via l'API et stockage dans le localStorage //
 		if (forceFlag || works === null) {
 			// Récupération via l'API Swagger //
 			const response = await fetch('http://localhost:5678/api/works', {
@@ -19,51 +19,19 @@ export async function refreshWorks(forceFlag) {
 				throw new Error(`HTTP ${response.status}`)
 			} else if (response.ok) {
 				let responseData = await response.json()
-				// Rajout d'un appel de la fonction avant d'utiliser la méthode stringify sur works
-				galleryGeneration(responseData)
-				// Stockage dans le localStorag //
-				responseData = JSON.stringify(responseData)
-				window.localStorage.setItem('works', responseData)
+				galleryGeneration(responseData) // Affiche la galerie //
+				responseData = JSON.stringify(responseData) // Transforme les données en une string //
+				window.localStorage.setItem('works', responseData) // Stockage dans le localStorag //
 			}
 		} else {
-			// Sinon parse.works //
-			works = JSON.parse(works)
-			galleryGeneration(works)
+			works = JSON.parse(works) // Sinon parse.works //
+			galleryGeneration(works) // Affiche la galerie //
 		}
 	} catch (error) {
 		console.error("Une erreur s'est produite", error)
 	}
 }
-
-refreshWorks(false)
-genrationContaineurFilter()
-refreshCategories(false)
-
-//* GÉNÉRATION DES TRAVAUX SUR LA PAGE D'ACCUEIL //
-function galleryGeneration(works) {
-	const gallery = document.querySelector('.gallery')
-	gallery.innerHTML = ''
-	for (let i = 0; i < works.length; i++) {
-		const item = works[i]
-		//Création d'une balise figure //
-		const figureElement = document.createElement('figure')
-		//Création de la balise img //
-		const imgElement = document.createElement('img')
-		imgElement.src = item.imageUrl
-		imgElement.alt = `Photographie de Sophie Bluel : ${item.title}`
-		//Création de la balise figcaptation //
-		const figCaptationElement = document.createElement('figcaptation')
-		figCaptationElement.innerText = item.title
-		//Ajout des balises img et figcaptation dans la balise figure //
-		figureElement.appendChild(imgElement)
-		figureElement.appendChild(figCaptationElement)
-		//Ajout de la balise figure dans la div gallery //
-		gallery.appendChild(figureElement)
-	}
-}
-
-//? RÉCUPÉRATION ET STOCKAGE DANS LE LOCAL STORAGE DES CATÉGORIE //
-//* Récupération des catégories sur le localStorage //
+//* Fonction qui permet de récupérer les données des catégories des projets via l'API Swagger  //
 async function refreshCategories(forceFlag) {
 	let categories = window.localStorage.getItem('categories')
 	//* Si pas présent récupération via l'API et stockage dans le localStorage //
@@ -98,53 +66,83 @@ async function refreshCategories(forceFlag) {
 	}
 }
 
+refreshWorks(false) // Premier appel de la fonction pour récupérer les données des projets via l'API Swagger //
+genrationContaineurFilter() // Création du containeur des filtre //
+refreshCategories(false) // Premier appel de la fonction pour récupérer les données des catégories des projets via l'API Swagger //
+
+//! AFFICHAGE DE LA GALERIE //
+//* Fonction qui permet d'afficher la galerie dynamiquement sur la page d'accueil //
+//? Paramètre [array] type string //
+function galleryGeneration(works) {
+	const gallery = document.querySelector('.gallery')
+	gallery.innerHTML = '' // Vide l'élémenent pour être sur qu'il n'y ai pas de doublont //
+	for (let i = 0; i < works.length; i++) {
+		const item = works[i]
+
+		const figureElement = document.createElement('figure') //Création d'une balise figure //
+
+		const imgElement = document.createElement('img') //Création de la balise img //
+		imgElement.src = item.imageUrl
+		imgElement.alt = `Photographie de Sophie Bluel : ${item.title}`
+
+		const figCaptationElement = document.createElement('figcaptation') //Création de la balise figcaptation //
+		figCaptationElement.innerText = item.title
+		//Ajout des balises img et figcaptation dans la balise figure //
+		figureElement.appendChild(imgElement)
+		figureElement.appendChild(figCaptationElement)
+
+		gallery.appendChild(figureElement) //Ajout de la balise figure dans la div gallery //
+	}
+}
+
+//! GESTION DES FILTRES //
+//* Fonction qui permet de créer le conteneur pour l'affichage dynamique des filtres //
 function genrationContaineurFilter() {
 	let divElement = document.createElement('div')
 	divElement.classList.add('filters')
 	document.querySelector('.gallery').before(divElement)
 }
 
-//? CRÉATION DES FILTRES //
+//* Fonction qui permet de créer les filtres dynamiquement //
+//? Paramètre [array] type string //
 function creatingFilter(categories) {
 	const divElement = document.querySelector('.filters')
 	divElement.innerHTML = ''
-	// * Création du filtre Tous //
-	const filterBtnTous = document.createElement('button')
+
+	const filterBtnTous = document.createElement('button') // Création du filtre Tous //
 	filterBtnTous.innerText = 'Tous'
 	filterBtnTous.name = 'tous'
 	divElement.appendChild(filterBtnTous)
-	//* Boucle qui permet d'ajouter autant de bouton filtre qu'il a de catégorie dans le tableau categories //
+	// Boucle qui permet d'itérer autant de bouton filtre qu'il a de catégorie dans le tableau categories //
 	for (let i = 0; i < categories.length; i++) {
 		const filtersBtn = document.createElement('button')
-		const item = categories[i]
-		// .replace permet de modifier Hotel par Hôtel //
+		const item = categories[i] // Stockage dans une variable item de l'élément //
+
 		//! Attention si beaucoup d'éléments dans catégorie //
-		filtersBtn.innerText = item.name.replace(/Ho/g, 'Hô')
+		filtersBtn.innerText = item.name.replace(/Ho/g, 'Hô') // .replace permet de modifier Hotel par Hôtel //
 		// .replace permet de rechercher une string entre les deux slashs et le g exécute la recherche le deuxième argument remplace la string si trouvée //
 		filtersBtn.name = `${item.name.replace(/ /g, '').replace(/&r/g, '-et-r').toLowerCase()}`
-		// Ajout du bouton[i] dans la divElement //
-		divElement.appendChild(filtersBtn)
+		divElement.appendChild(filtersBtn) // Ajout du bouton[i] dans la divElement //
 	}
 }
-
+//? Paramètre [array] type string //
+//* Fonction qui permet d'ajouter un écouteur d'événement sur chaque filtres //
 function listenFilter(categories) {
-	//* Récupération des noms de chaque catégories et stockage dans la const categoriesName //
-	const categoriesName = categories.map((name) => name.name)
-	// Ajout au tableau la string Tous //
-	categoriesName.push('Tous')
-	//* Écoute de chaque button filters //
+	const categoriesName = categories.map((name) => name.name) // Récupération des noms de chaque catégories et stockage dans la const categoriesName //
+	categoriesName.push('Tous') // Ajout au tableau la string Tous //
+
 	const filtersBtns = document.querySelectorAll('.filters button')
-	// Écoute de l'ensemble des boutons filtre //
+
 	filtersBtns.forEach((button) => {
+		// Écoute de l'ensemble des boutons filtre //
 		button.addEventListener('click', (event) => {
 			if (event.target.name === 'tous') {
-				refreshWorks(true)
-				refreshCategories(true)
+				refreshWorks(true) // Force le rafraichissement du localStorage pour les projets //
+				refreshCategories(true) // Force le rafraichissement du localStorage pour les catégories des projets //
 			}
-			// récupération de l'évenement dans la variable filterName et remplace la première lettre du mot en Majusculte//
-			let filterName = capitalizeFirstLetter(event.target.name)
-			// Remplacement si évenement de la string "Hôtel & restaurant" par la même string contenu dans le tableau //
-			filterName = filterName.replace(/Hotels-et-restaurants/g, 'Hotels & restaurants')
+
+			let filterName = capitalizeFirstLetter(event.target.name) // Récupération de l'évenement dans la variable filterName et remplace la première lettre du mot en Majusculte//
+			filterName = filterName.replace(/Hotels-et-restaurants/g, 'Hotels & restaurants') // Remplacement si évenement de la string "Hôtel & restaurant" par la même string contenu dans le tableau //
 			// Vérification que la string de l'évenement est bien présente dans le tableau categoriesName et applique la fonction filterDeletAndDisplay //
 			categoriesName.includes(filterName)
 				? filterDeletAndDisplay(filterName)
@@ -152,30 +150,31 @@ function listenFilter(categories) {
 		})
 	})
 }
-
+//* Fonction qui permet de mettre une lettre majuscule à chaque début de mot //
+//? Paramètre type string //
 function capitalizeFirstLetter(word) {
-	// Vérification que la chaîne n'est pas vide
-	if (word.length === 0) return word
-	// Première lettre en majuscule et le reste en minuscules
-	const firstLetterCapital = word.charAt(0).toUpperCase()
-	const RestOfWordLowercase = word.slice(1).toLowerCase()
+	if (word.length === 0) {
+		return word // Vérification que la chaîne n'est pas vide //
+	}
+	const firstLetterCapital = word.charAt(0).toUpperCase() // Récupération de la première lettre de la string et en majuscule //
+	const RestOfWordLowercase = word.slice(1).toLowerCase() // Récupération du reste est en minuscule //
 	return firstLetterCapital + RestOfWordLowercase
 }
 
 //* Fonction qui permet de supprimer la gallery du DOM et de l'afficher de nouveau avec la liste filtrée //
 function filterDeletAndDisplay(filterName) {
-	let works = JSON.parse(window.localStorage.getItem('works'))
+	let works = JSON.parse(window.localStorage.getItem('works')) 
 	if (filterName === 'tous') {
 		document.querySelector('.gallery').innerHTML = ''
-		galleryGeneration(works)
+		galleryGeneration(works) // Affichage de la galerie avec l'ensemble des projets //
 	} else {
 		const filterdWorks = works.filter((work) => work.category.name === filterName)
-		document.querySelector('.gallery').innerHTML = ''
-		galleryGeneration(filterdWorks)
+		document.querySelector('.gallery').innerHTML = '' // vide la galerie //
+		galleryGeneration(filterdWorks)  // Affichage de la galerie avec les projets filtrés // 
 	}
 }
 
-//? MODIFICATION DE LA PAGE SI L'UTILISATEUR EST CONNECTÉ //
+//! MODIFICATION DE LA PAGE SI L'UTILISATEUR EST CONNECTÉ //
 //* Fonction qui permet d'appeler toutes les fonctions qui modifireont la page si l'utilisteur est connecté //
 function modficationHomePageUserLogIn() {
 	newDivLogIn()
@@ -187,12 +186,15 @@ function modficationHomePageUserLogIn() {
 //* Fonction qui permet de créer la div au dessus du header si utilisateur connecté //
 function newDivLogIn() {
 	const newDiv = document.createElement('div')
-	const newIcon = document.createElement('i')
-	const newPara = document.createElement('p')
 	newDiv.classList.add('edit-mode')
+
+	const newIcon = document.createElement('i')
 	newIcon.classList.add('fa-regular', 'fa-pen-to-square')
 	newIcon.setAttribute('aria-hidden', 'true')
+
+	const newPara = document.createElement('p')
 	newPara.innerText = 'Mode édition'
+
 	newDiv.appendChild(newIcon)
 	newDiv.appendChild(newPara)
 
@@ -201,48 +203,54 @@ function newDivLogIn() {
 
 //* Remplacement du bouton logIn par logOut //
 function replaceLogInLogOut() {
-	// Suppression du bouton logIn //
-	document.getElementById('loginDisabel').remove()
+	
+	document.getElementById('loginDisabel').remove() // Suppression du bouton logIn //
 	// Création du bouton logOut //
 	const newLi = document.createElement('li')
+
 	const logOut = document.createElement('a')
 	logOut.innerText = 'logout'
 	logOut.id = 'logOut'
 	logOut.href = '#'
+
 	newLi.appendChild(logOut)
 	document.getElementById('logo-instagram').before(newLi)
-	//* Gestion de la déconnexion au clic sur le btn logOut //
+	// Gestion de la déconnexion au clic sur le btn logOut //
 	document.getElementById('logOut').addEventListener('click', () => {
-		resetSession()
+		resetSession() // Déconnexion //
 	})
 }
 
 //* Fonction qui permet d'ajouter le btn modifier à coté du titre Mes Projet //
 function addButtonModify() {
 	const newDiv = document.createElement('div')
-	const h2 = document.querySelector('#portfolio h2')
-	const subNewDiv = document.createElement('div')
-	const newAncre = document.createElement('a')
-	const newIcon = document.createElement('i')
 	newDiv.id = 'user-modifications'
+
+	const h2 = document.querySelector('#portfolio h2')
 	h2.classList.add('user-connected-h2')
+
+	const subNewDiv = document.createElement('div')
 	subNewDiv.id = 'sub-user-modifications'
+
+	const newAncre = document.createElement('a')
 	newAncre.id = 'edit-btn'
 	newAncre.innerText = 'modifier'
 	newAncre.href = '#delet-modal'
+
+	const newIcon = document.createElement('i')
 	newIcon.classList.add('fa-regular', 'fa-pen-to-square')
 	newIcon.setAttribute('aria-hidden', 'true')
+
 	subNewDiv.appendChild(newIcon)
 	subNewDiv.appendChild(newAncre)
-	// Ajout du h2 Mes Projets dans la newDiv //
-	newDiv.appendChild(h2)
-	// Ajout de la subNewDiv dans la newDiv //
-	newDiv.appendChild(subNewDiv)
-	// Ajout de la newDiv dans le DOM //
-	document.querySelector('.filters').before(newDiv)
-	//* Écoute du clic sur le bouton "modifier" //
+
+	newDiv.appendChild(h2) 	// Ajout du h2 Mes Projets dans la newDiv //
+	newDiv.appendChild(subNewDiv) 	// Ajout de la subNewDiv dans la newDiv //
+	
+	document.querySelector('.filters').before(newDiv) // Ajout de la newDiv dans le DOM //
+	// Écoute du clic sur le bouton "modifier" //
 	document.getElementById('edit-btn').addEventListener('click', () => {
-		creatModal()
+		creatModal() // Création de la modale si click sur le btn modifier //
 	})
 }
 
@@ -257,21 +265,21 @@ try {
 	const token = JSON.parse(window.sessionStorage.getItem('token'))
 	// Si le Id et le token sont différent d'une chaine de caractère vide alors //
 	if (token.userId !== '' && token.token !== '') {
-		modficationHomePageUserLogIn()
-		//Active la fonction qui permet de vérfier le temps d'inactivité de l'utilisateur //
-		inactivityCheck()
+		modficationHomePageUserLogIn() // Modifie la page d'accueil //
+		inactivityCheck() // Active la fonction qui permet de vérfier le temps d'inactivité de l'utilisateur //
 	}
 } catch {}
 
-//? GESTION DE LA DÉCONNEXION //
+//! GESTION DE LA DÉCONNEXION //
 //* Supprime le token du sessionStorage et réactualise la page  //
 function resetSession() {
-	window.sessionStorage.removeItem('token')
-	location.reload()
+	window.sessionStorage.removeItem('token') // Supprime la clé token du seesionStorage //
+	location.reload() // Acctualise la page d'accueil //
 }
 
-//? VÉRIFICATION D'INACTIVITÉ //
+// VÉRIFICATION D'INACTIVITÉ //
 let lastActivityTime = Date.now()
+
 //* Fonction qui permet de mettre à jour la date/heure de la dernière activité de l'utilisateur //
 function updateLastActivityTime() {
 	lastActivityTime = Date.now()
@@ -283,10 +291,10 @@ function inactivityCheck() {
 	document.addEventListener('click', updateLastActivityTime)
 
 	setInterval(function () {
-		const currentTime = Date.now()
-		const elapsedTime = currentTime - lastActivityTime
+		const currentTime = Date.now() // Stockage du temps depuis le 1er janvier 1970 //
+		const elapsedTime = currentTime - lastActivityTime // Calcule du temps écoulé //
 		if (elapsedTime >= inactivityTimeout) {
-			resetSession()
+			resetSession() // Déconnexion //
 		}
-	}, 10000)
+	}, 10000) // Vérification toutes les 10 secondes //
 }
