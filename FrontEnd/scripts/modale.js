@@ -520,7 +520,6 @@ function ListenEventForm() {
 	document.querySelector('.selected-option').addEventListener('click', () => {
 		setTimeout(checkFormValidity, 2000) // Permet de laisser un délai avant d'exécuter la fonction checkFormValidity //
 	})
-	// document.getElementById('select-field').addEventListener('change', checkFormValidity) //!! Ne fonctionne pas car c'est une fonction qui modifie la valeur !!//
 	document.getElementById('input-title').addEventListener('input', checkFormValidity)
 }
 //* Fonction qui permet de gerer l'affichage dans l'input type file //
