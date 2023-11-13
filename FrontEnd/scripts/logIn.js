@@ -1,12 +1,12 @@
 //* Fonction qui permet l'écoute de l'evement submit du logIn et vérification des informations + message d'erreur //
-async function logInbtn() {
+async function logInButton() {
 	document.querySelector('#logIn form').addEventListener('submit', (event) => {
 		event.preventDefault() // Évite le rechargement de la page //
 		manageForm() // Vérification des données du formulaire //
 	})
 }
 
-logInbtn()
+logInButton()
 //* Fonction qui permet de gérer le formulaire en demandant la vérification de l'ensemble des champs //
 function manageForm() {
 	try {

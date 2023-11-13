@@ -198,13 +198,13 @@ async function createModalGallery() {
 		//Pour chaque élément contenu dans la constante trash ajoute un écouteur d'évenement //
 		trash[i].addEventListener('click', (e) => {
 			e.preventDefault() // Supprime le rafraichissement automatique de la page //
-			deletElement(trash[i].dataset.id) // Appel de la fonction qui va permettre de supprimer un projet de la base de données et envoi de son id à la fonction //
+			deletProjet(trash[i].dataset.id) // Appel de la fonction qui va permettre de supprimer un projet de la base de données et envoi de son id à la fonction //
 		})
 	}
 }
 //*Fonction qui permet de supprimer un projet de la base de données //
 //? Paramètre type number : id du trashElement //
-async function deletElement(trashElement) {
+async function deletProjet(trashElement) {
 	const tokenData = JSON.parse(window.sessionStorage.getItem('token')) // Récupération du token dans le sessionStorage //
 	const token = `Bearer ${tokenData.token}` // Stockage du token dans la variable token //
 	try {
@@ -508,7 +508,7 @@ function checkFormValidity() {
 		if (inputFile.files.length > 0 && inputTitle.trim() !== '' && selectField !== '') {
 			// Si l'input type file contien un fichier et si l'input type et le select field ne sont pas vide //
 			submitButton.removeAttribute('disabled', '') // Activer le bouton
-			manageFormAddWork()
+			manageFormAddProject()
 		} else {
 			submitButton.setAttribute('disabled', '') // Désactiver le bouton
 		}
@@ -521,6 +521,52 @@ function ListenEventForm() {
 		setTimeout(checkFormValidity, 2000) // Permet de laisser un délai avant d'exécuter la fonction checkFormValidity //
 	})
 	document.getElementById('input-title').addEventListener('input', checkFormValidity)
+}
+//* Fonction qui permet de gérer les données du formulaire //
+async function manageFormAddProject() {
+	document.getElementById('submit-button').addEventListener('click', (event) => {
+		event.preventDefault() // Supprime le rafraichissement automatique de la page //
+		// Récupération des différentes données des champs //
+		const inputFile = document.getElementById('input-file').files[0]
+		const inputTitleValue = document.getElementById('input-title').value
+		const selectFieldId = document.getElementById('select-field').value
+		// Création d'un nouvel objet de type formData //
+		const formData = new FormData()
+		// Stockage des différentes données dans l'objet formData par clé/valeur //
+		formData.append('image', inputFile)
+		formData.append('title', inputTitleValue)
+		formData.append('category', selectFieldId)
+
+		addProject(formData) // Ajoute le projet avec comme paramètre l'objet fromData //
+	})
+}
+//* Fonction qui permet d'ajouter un projet dans la base de données //
+//? Paramètre type objet fromData //
+async function addProject(formData) {
+	const tokenData = JSON.parse(window.sessionStorage.getItem('token')) // Récupération du token dans le sessionStorage //
+	const token = `Bearer ${tokenData.token}` // Stockage du token dans la variable token //
+
+	try {
+		const response = await fetch('http://localhost:5678/api/works', {
+			method: 'POST',
+			headers: {
+				accept: 'application/json',
+				Authorization: token,
+			},
+			body: formData,
+		})
+		if (!response.ok) {
+			//Gére l'erreur ici
+			throw new Error(`HTTP ${response.status}`)
+		} else if (response.ok) {
+			await refreshWorks(true) // Force le rafraichissement du localStorage //
+			deleteModalContent() // Vide le contenue de la modale //
+			addModalProject() // Affiche la modale d'ajout de projet //
+			showMessageSnackbBar('Élément ajouté') // Affiche le message élément supprimé dans la snackBar //
+		}
+	} catch (error) {
+		console.error("Une erreur s'est produite", error) // Affiche le message d'erreur dans la console avec le status de la requète //
+	}
 }
 //* Fonction qui permet de gerer l'affichage dans l'input type file //
 function previewPicture() {
@@ -566,53 +612,6 @@ function previewPicture() {
 		}
 	})
 }
-//* Fonction qui permet de gérer les données du formulaire //
-async function manageFormAddWork() {
-	document.getElementById('submit-button').addEventListener('click', (event) => {
-		event.preventDefault() // Supprime le rafraichissement automatique de la page //
-		// Récupération des différentes données des champs //
-		const inputFile = document.getElementById('input-file').files[0]
-		const inputTitleValue = document.getElementById('input-title').value
-		const selectFieldId = document.getElementById('select-field').value
-		// Création d'un nouvel objet de type formData //
-		const formData = new FormData()
-		// Stockage des différentes données dans l'objet formData par clé/valeur //
-		formData.append('image', inputFile)
-		formData.append('title', inputTitleValue)
-		formData.append('category', selectFieldId)
-
-		addWork(formData) // Ajoute le projet avec comme paramètre l'objet fromData //
-	})
-}
-//* Fonction qui permet d'ajouter un projet dans la base de données //
-//? Paramètre type objet fromData //
-async function addWork(formData) {
-	const tokenData = JSON.parse(window.sessionStorage.getItem('token')) // Récupération du token dans le sessionStorage //
-	const token = `Bearer ${tokenData.token}` // Stockage du token dans la variable token //
-
-	try {
-		const response = await fetch('http://localhost:5678/api/works', {
-			method: 'POST',
-			headers: {
-				accept: 'application/json',
-				Authorization: token,
-			},
-			body: formData,
-		})
-		if (!response.ok) {
-			//Gére l'erreur ici
-			throw new Error(`HTTP ${response.status}`)
-		} else if (response.ok) {
-			await refreshWorks(true) // Force le rafraichissement du localStorage //
-			deleteModalContent() // Vide le contenue de la modale //
-			addModalProject() // Affiche la modale d'ajout de projet //
-			showMessageSnackbBar('Élément ajouté') // Affiche le message élément supprimé dans la snackBar //
-		}
-	} catch (error) {
-		console.error("Une erreur s'est produite", error) // Affiche le message d'erreur dans la console avec le status de la requète //
-	}
-}
-
 //* Fonction qui permet de nettoyer et de réafficher l'input pour la photo //
 function clearAndReshow() {
 	const containeurInputFile = document.querySelector('.containeur-input-files') // Sélection du conataineur de l'input pour le fichier à insérer //

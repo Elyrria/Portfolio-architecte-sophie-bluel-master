@@ -19,13 +19,13 @@ export async function refreshWorks(forceFlag) {
 				throw new Error(`HTTP ${response.status}`)
 			} else if (response.ok) {
 				let responseData = await response.json()
-				galleryGeneration(responseData) // Affiche la galerie //
+				genertationGallery(responseData) // Affiche la galerie //
 				responseData = JSON.stringify(responseData) // Transforme les données en une string //
 				window.localStorage.setItem('works', responseData) // Stockage dans le localStorag //
 			}
 		} else {
 			works = JSON.parse(works) // Sinon parse.works //
-			galleryGeneration(works) // Affiche la galerie //
+			genertationGallery(works) // Affiche la galerie //
 		}
 	} catch (error) {
 		console.error("Une erreur s'est produite", error)
@@ -67,13 +67,13 @@ async function refreshCategories(forceFlag) {
 }
 
 refreshWorks(false) // Premier appel de la fonction pour récupérer les données des projets via l'API Swagger //
-genrationContaineurFilter() // Création du containeur des filtre //
+generationContaineurFilter() // Création du containeur des filtre //
 refreshCategories(false) // Premier appel de la fonction pour récupérer les données des catégories des projets via l'API Swagger //
 
 //! AFFICHAGE DE LA GALERIE //
 //* Fonction qui permet d'afficher la galerie dynamiquement sur la page d'accueil //
 //? Paramètre [array] type string //
-function galleryGeneration(works) {
+function genertationGallery(works) {
 	const gallery = document.querySelector('.gallery')
 	gallery.innerHTML = '' // Vide l'élémenent pour être sur qu'il n'y ai pas de doublont //
 	for (let i = 0; i < works.length; i++) {
@@ -97,7 +97,7 @@ function galleryGeneration(works) {
 
 //! GESTION DES FILTRES //
 //* Fonction qui permet de créer le conteneur pour l'affichage dynamique des filtres //
-function genrationContaineurFilter() {
+function generationContaineurFilter() {
 	let divElement = document.createElement('div')
 	divElement.classList.add('filters')
 	document.querySelector('.gallery').before(divElement)
@@ -163,14 +163,14 @@ function capitalizeFirstLetter(word) {
 
 //* Fonction qui permet de supprimer la gallery du DOM et de l'afficher de nouveau avec la liste filtrée //
 function filterDeletAndDisplay(filterName) {
-	let works = JSON.parse(window.localStorage.getItem('works')) 
+	let works = JSON.parse(window.localStorage.getItem('works'))
 	if (filterName === 'tous') {
 		document.querySelector('.gallery').innerHTML = ''
-		galleryGeneration(works) // Affichage de la galerie avec l'ensemble des projets //
+		genertationGallery(works) // Affichage de la galerie avec l'ensemble des projets //
 	} else {
 		const filterdWorks = works.filter((work) => work.category.name === filterName)
 		document.querySelector('.gallery').innerHTML = '' // vide la galerie //
-		galleryGeneration(filterdWorks)  // Affichage de la galerie avec les projets filtrés // 
+		genertationGallery(filterdWorks) // Affichage de la galerie avec les projets filtrés //
 	}
 }
 
@@ -203,7 +203,6 @@ function newDivLogIn() {
 
 //* Remplacement du bouton logIn par logOut //
 function replaceLogInLogOut() {
-	
 	document.getElementById('loginDisabel').remove() // Suppression du bouton logIn //
 	// Création du bouton logOut //
 	const newLi = document.createElement('li')
@@ -244,9 +243,9 @@ function addButtonModify() {
 	subNewDiv.appendChild(newIcon)
 	subNewDiv.appendChild(newAncre)
 
-	newDiv.appendChild(h2) 	// Ajout du h2 Mes Projets dans la newDiv //
-	newDiv.appendChild(subNewDiv) 	// Ajout de la subNewDiv dans la newDiv //
-	
+	newDiv.appendChild(h2) // Ajout du h2 Mes Projets dans la newDiv //
+	newDiv.appendChild(subNewDiv) // Ajout de la subNewDiv dans la newDiv //
+
 	document.querySelector('.filters').before(newDiv) // Ajout de la newDiv dans le DOM //
 	// Écoute du clic sur le bouton "modifier" //
 	document.getElementById('edit-btn').addEventListener('click', () => {
