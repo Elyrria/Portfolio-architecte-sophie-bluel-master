@@ -16,7 +16,7 @@
 	<link rel="stylesheet" href="styles/modale.css">
 	<script src="https://kit.fontawesome.com/6766cfff29.js" crossorigin="anonymous"></script>
 	<!--* type="module" permet de récupérer des méthodes ou autres informations dans d'autre fichier script.js -->
-	<script type="module" src="scripts/script.js"></script>
+	<script type="module" src="scripts/script.js" defer></script>
 </head>
 
 <body>
@@ -29,7 +29,8 @@
 				<li><a href="#portfolio">projets</a></li>
 				<li><a href="#contact">contact</a></li>
 				<li id="loginDisabel"><a href="pages/logIn.html">login</a></li>
-				<li id="logo-instagram"><a href="https://www.instagram.com/"><i class="fa-brands fa-instagram" aria-hidden="true"></i></a>
+				<li id="logo-instagram"><a href="https://www.instagram.com/"><i class="fa-brands fa-instagram"
+							aria-hidden="true"></i></a>
 				</li>
 			</ul>
 		</nav>
@@ -60,9 +61,9 @@
 			<p>Vous avez un projet ? Discutons-en !</p>
 			<form class="form-style" action="#" method="post">
 				<label class="label-style" for="name">Nom</label>
-				<input class="input-style" type="text" name="name" id="name">
+				<input class="input-style" type="text" name="name" id="name" autocomplete="on">
 				<label class="label-style" for="email">Email</label>
-				<input class="input-style" type="email" name="email" id="email">
+				<input class="input-style" type="email" name="email" id="email" autocomplete="on">
 				<label class="label-style" for="message">Message</label>
 				<textarea class="input-style" name="message" id="message" cols="30" rows="10"></textarea>
 				<input class="button" type="submit" value="Envoyer">

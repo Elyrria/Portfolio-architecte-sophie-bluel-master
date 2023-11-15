@@ -17,6 +17,7 @@ export function creatModal() {
 	deleteProjectModal() // Affichage du contenu de la modale de suppression des projets //
 	addAriaHidden() // Ajout des attributs aria-hidden pour l'accésibilité //
 	creationSnackBar() // Création de la SnackBar à afficher lors de la suppression et ajout d'un projet //
+	closeModalOutside() // Ajout d'écouteur d'évenement à l'extérieur de la modal pour la fermeture //
 }
 //* Fonction qui permet de créer une div dans la modale avec une flèche et une croix
 function creatModalDivXMarkAndArrow() {
@@ -156,7 +157,6 @@ function deleteProjectModal() {
 	creatModalDivXMarkAndArrow() // Ajout de la div contenant la flèche retour et la croix de fermeture //
 	createModalGallery() // Ajout de la gallerie pour la suppression des projets //
 	listenModalEvents() // Ajout des écouteurs d'événement qui permettront de switcher entre les modales //
-	closeModalOutside() // Ajout d'écouteur d'évenement à l'extérieur de la modal pour la fermeture //
 	closeModalCross() // Ajout d'un écouteur d'évévenemnt sur la croix de fermeture de la modale //
 }
 //* Fonction qui permet d'afficher chaque projet la modale //
@@ -358,7 +358,7 @@ function creatSelectfField(categories) {
 	const labelSelectCategories = document.createElement('label') // Création du label du select field //
 	labelSelectCategories.innerText = 'Catégorie'
 	labelSelectCategories.classList.add('label-style')
-	labelSelectCategories.for = 'select-field'
+	labelSelectCategories.setAttribute('for', 'select-field')
 
 	const selectCategories = document.createElement('select') // Création du select //
 	selectCategories.classList.add('input-style')
@@ -460,6 +460,20 @@ function manageSelectInteraction() {
 			modalForm.style.marginBottom = '30px' // Modifie le margin-bottom à 30 px //
 			document.querySelector('.fa-chevron-down').style.visibility = 'visible' // Affiche le chevron vers le bas //
 		}
+
+		const clickHandler = (event) => {
+			if (event.target !== selectedOption) {
+				optionList.style.display = 'none'
+				modalForm.style.marginBottom = '30px'
+				document.querySelector('.fa-chevron-down').style.visibility = 'visible'
+				modalWrapper.removeEventListener('click', clickHandler) // Utiliser la même fonction pour supprimer l'écouteur
+				if (document.querySelector('.fa-bars') !== null) {
+					document.querySelector('.fa-bars').remove()
+				}
+			}
+		}
+
+		modalWrapper.addEventListener('click', clickHandler)
 	})
 
 	optionList.addEventListener('click', (event) => {
@@ -471,21 +485,6 @@ function manageSelectInteraction() {
 			realSelect.value = event.target.getAttribute('data-id') // Modifie la valeur du vrai select par le data-id de la balise Li //
 			optionList.style.display = 'none' // Désactive l'affichage de la liste d'option //
 			modalForm.style.marginBottom = '30px' // Modifie le margin-bottom à 30 px //
-
-			if (document.querySelector('.fa-bars') !== null) {
-				// Si l'icone est présent alors on le supprime //
-				document.querySelector('.fa-bars').remove()
-			}
-		}
-	})
-
-	modalWrapper.addEventListener('click', (event) => {
-		// Écoute de l'événement au click sur l'extérieur de la liste d'options //
-		if (event.target !== selectedOption) {
-			// Si le click est en dehors de la liste d'option //
-			optionList.style.display = 'none' // Désactive la liste d'options //
-			modalForm.style.marginBottom = '30px' // Modifie le margin-bottom à 30 px //
-			document.querySelector('.fa-chevron-down').style.visibility = 'visible' // Rend visible le chevron vers le bas //
 
 			if (document.querySelector('.fa-bars') !== null) {
 				// Si l'icone est présent alors on le supprime //

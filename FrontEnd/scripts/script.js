@@ -34,7 +34,7 @@ export async function refreshWorks(forceFlag) {
 //* Fonction qui permet de récupérer les données des catégories des projets via l'API Swagger  //
 async function refreshCategories(forceFlag) {
 	let categories = window.localStorage.getItem('categories')
-	//* Si pas présent récupération via l'API et stockage dans le localStorage //
+	// Si pas présent récupération via l'API et stockage dans le localStorage //
 	try {
 		if (forceFlag || categories === null) {
 			// Récupération via l'API Swagger //
@@ -268,7 +268,6 @@ try {
 		inactivityCheck() // Active la fonction qui permet de vérfier le temps d'inactivité de l'utilisateur //
 	}
 } catch {}
-
 //! GESTION DE LA DÉCONNEXION //
 //* Supprime le token du sessionStorage et réactualise la page  //
 function resetSession() {
